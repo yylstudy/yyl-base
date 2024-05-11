@@ -1,0 +1,2 @@
+#set($user = $rundata.request.session.getAttribute("managerUser"))
+<table>21111111111111111111111111</table>

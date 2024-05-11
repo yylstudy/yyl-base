@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkcircle.system.mapper.SysUserRoleMapper">
+
+
+    <resultMap id="SysUserDto"
+               type="com.linkcircle.system.dto.SysUserDTO"></resultMap>
+
+
+    <select id="getRoleByUserIdAndCorpId" resultType="com.linkcircle.system.dto.SysRoleDTO">
+        SELECT sys_role.*
+        FROM sys_user_role
+        left join sys_role on sys_user_role.role_id = sys_role.id
+        WHERE sys_user_role.user_id = #{userId} and corp_id=#{corpId}
+    </select>
+
+
+    <select id="selectSysUser" resultMap="SysUserDto">
+        SELECT
+        b.id,
+        b.password,
+        b.username,
+        b.phone,
+        b.email,
+        b.depart_id,
+        b.disabled_flag,
+        b.remark,
+        b.update_time,
+        b.create_time
+        FROM
+        sys_user_role a,sys_user b, sys_role c
+        <where>
+            a.user_id = b.id
+            and a.role_id = c.id
+            and b.deleted_flag=0
+            <if test="queryForm.roleId != null">
+                AND a.role_id = #{queryForm.roleId}
+            </if>
+            <if test="queryForm.phoneOrEmail != null and queryForm.phoneOrEmail!= ''">
+                AND (b.phone = #{queryForm.phoneOrEmail} or b.email = #{queryForm.phoneOrEmail})
+            </if>
+        </where>
+    </select>
+
+    <select id="getUserByRoleId" resultMap="SysUserDto">
+        SELECT sys_user.id,
+               sys_user.password,
+               sys_user.username,
+               sys_user.phone,
+               sys_user.depart_id,
+               sys_user.disabled_flag,
+               sys_user.remark,
+               sys_user.update_time,
+               sys_user.create_time
+        FROM sys_user_role
+        left join sys_user  on sys_user_role.user_id = sys_user.id
+        WHERE sys_user_role.role_id = #{roleId}
+    </select>
+
+    <select id="selectRoleByUserIdList"
+            resultType="com.linkcircle.system.dto.SysUserRoleDTO">
+        SELECT
+        sys_user_role.role_id,
+        sys_user_role.user_id,
+        sys_role.role_name
+        FROM
+        sys_user_role
+        LEFT JOIN sys_role  ON sys_role.id = sys_user_role.role_id
+        WHERE
+        user_id in
+        <foreach collection="userIdList" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    <select id="getRoleIdsByCorpIdAndUserId" resultType="java.lang.Long">
+        SELECT
+        a.role_id
+        FROM
+        sys_user_role a,sys_role b where a.role_id=b.id
+        and b.corp_id=#{corpId}
+        and user_id=#{userId}
+    </select>
+
+
+</mapper>

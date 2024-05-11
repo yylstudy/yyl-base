@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkcircle.system.mapper.SysUserRoleMapper">
+
+
+    <resultMap id="SysUserDto"
+               type="com.linkcircle.system.dto.SysUserDTO"></resultMap>
+
+
+    <select id="selectRoleByUserId" resultType="com.linkcircle.system.dto.SysRoleDTO">
+        SELECT sys_role.*
+        FROM sys_user_role
+        left join sys_role on sys_user_role.role_id = sys_role.id
+        WHERE sys_user_role.user_id = #{userId}
+    </select>
+
+
+    <select id="selectSysUser" resultMap="SysUserDto">
+        SELECT
+        sys_user.id,
+        sys_user.username,
+        sys_user.password,
+        sys_user.realname,
+        sys_user.phone,
+        sys_user.depart_id,
+        sys_user.disabled_flag,
+        sys_user.remark,
+        sys_user.update_time,
+        sys_user.create_time,
+        sys_depart.name departName
+        FROM
+        sys_user_role
+        left join sys_user  on sys_user_role.user_id = sys_user.id
+        left join sys_role  on sys_user_role.role_id = sys_role.id
+        left join sys_depart on sys_user.depart_id=sys_depart.id
+        <where>
+            <if test="queryForm.username != null and queryForm.username!= ''">
+                AND sys_user.username = #{queryForm.username}
+            </if>
+            <if test="queryForm.roleId != null">
+                AND sys_user_role.role_id = #{queryForm.roleId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getUserByRoleId" resultMap="SysUserDto">
+        SELECT sys_user.id,
+               sys_user.username,
+               sys_user.password,
+               sys_user.realname,
+               sys_user.phone,
+               sys_user.depart_id,
+               sys_user.disabled_flag,
+               sys_user.remark,
+               sys_user.update_time,
+               sys_user.create_time
+        FROM sys_user_role
+        left join sys_user  on sys_user_role.user_id = sys_user.id
+        WHERE sys_user_role.role_id = #{roleId}
+    </select>
+
+    <select id="selectRoleByUserIdList"
+            resultType="com.linkcircle.system.dto.SysUserRoleDTO">
+        SELECT
+        sys_user_role.role_id,
+        sys_user_role.user_id,
+        sys_role.role_name
+        FROM
+        sys_user_role
+        LEFT JOIN sys_role  ON sys_role.id = sys_user_role.role_id
+        WHERE
+        user_id in
+        <foreach collection="userIdList" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

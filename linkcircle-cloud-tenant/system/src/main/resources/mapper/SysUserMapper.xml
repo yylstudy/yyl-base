@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkcircle.system.mapper.SysUserMapper">
+
+    <select id="querySysUser" resultType="com.linkcircle.system.dto.SysUserDTO">
+        SELECT
+        a.*,
+        b.name AS departName
+        FROM sys_user a
+        LEFT JOIN sys_depart b ON b.id = a.depart_id
+        <where>
+            exists (select 1 from corp_user c where a.id = c.user_id and c.corp_id=#{queryForm.corpId})
+            <if test="queryForm.phoneOrEmail != null and queryForm.phoneOrEmail != ''">
+                AND (a.phone = #{queryForm.phoneOrEmail} or a.email = #{queryForm.phoneOrEmail})
+            </if>
+            <if test="departmentIdList != null and departmentIdList.size > 0">
+                and
+                a.depart_id
+                in
+                <foreach collection="departmentIdList" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="queryForm.disabledFlag != null">
+                AND a.disabled_flag = #{queryForm.disabledFlag}
+            </if>
+            <if test="queryForm.deletedFlag != null">
+                AND a.deleted_flag = #{queryForm.deletedFlag}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryNotInRoleUserByRoleId" resultType="com.linkcircle.system.dto.SysUserDTO">
+        SELECT
+        a.*
+        FROM sys_user a where
+        deleted_flag = 0 and
+        exists (select 1 from corp_user c where a.id = c.user_id and c.corp_id=#{queryForm.corpId})
+        and not exists (select 1 from sys_user_role c where a.id = c.user_id and c.role_id=#{queryForm.roleId})
+        <if test="queryForm.phoneOrEmail != null and queryForm.phoneOrEmail != ''">
+            AND (a.phone = #{queryForm.phoneOrEmail} or a.email = #{queryForm.phoneOrEmail})
+        </if>
+        <if test="queryForm.disabledFlag != null">
+            AND a.disabled_flag = #{queryForm.disabledFlag}
+        </if>
+    </select>
+
+    <select id="selectUserByDisabledAndDeleted"
+            resultType="com.linkcircle.system.dto.SysUserDTO">
+        SELECT
+        sys_user.*,
+        sys_depart.name AS departName
+        FROM sys_user
+        LEFT JOIN sys_depart ON sys_depart.id = sys_user.depart_id
+        <where>
+            <if test="disabledFlag != null">
+                AND sys_user.disabled_flag = #{disabledFlag}
+            </if>
+            <if test="deletedFlag != null">
+                AND sys_user.deleted_flag = #{deletedFlag}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

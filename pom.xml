@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>yyl-common</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>base-common</module>
+        <module>dynamic-datasource-spring-boot-starter</module>
+        <module>lk-ss</module>
+        <module>leaf</module>
+        <module>linkcircle-cloud</module>
+        <module>linkcircle-cloud-tenant</module>
+        <module>maven-info</module>
+        <module>minio-spring-boot-starter</module>
+        <module>mq-spring-boot-starter</module>
+        <module>mybatis-plus-boot-starter</module>
+<!--        <module>otter</module>-->
+        <module>redis-spring-boot-starter</module>
+        <module>shardingsphere-jdbc-core-spring-boot-starter</module>
+        <module>spring-boot-test</module>
+    </modules>
+</project>

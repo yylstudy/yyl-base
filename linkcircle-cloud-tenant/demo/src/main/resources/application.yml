@@ -1,0 +1,19 @@
+server:
+  port: 7002
+spring:
+  application:
+    name: demo
+  cloud:
+    nacos:
+      server-addr: 172.16.252.111:8848
+      username: nacos
+      password: Nacos@4399
+      config:
+        namespace: linkcircle-cloud2
+      discovery:
+        namespace: linkcircle-cloud2
+  config:
+    import:
+      - optional:nacos:demo.yaml
+
+

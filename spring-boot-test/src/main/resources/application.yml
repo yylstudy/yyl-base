@@ -1,0 +1,159 @@
+server:
+  port: 8086
+
+spring:
+  redis:
+    password: cqt!010@Redis
+    timeout: 5s
+    connectTimeout: 5s
+    cluster:
+      maxRedirects: 2
+      nodes:
+        - 10.255.50.23:36540
+    cluster2:
+      active: false
+      maxRedirects: 2
+      nodes:
+        - 10.255.50.23:36540
+#  datasource:
+#    url: jdbc:mysql://10.255.50.2:33010/link_asia_pro?characterEncoding=UTF-8&useSSL=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowMultiQueries=true&nullCatalogMeansCurrent=true
+#    username: root
+#    password: cqt@1234
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    hikari:
+#      minimum-idle: 1
+#      maximum-pool-size: 1
+#      connection-test-query: 'select 1'
+#      validation-timeout: 1000
+#      max-lifetime: 900000
+#      idle-timeout: 30000
+#      connection-timeout: 30000
+
+  rabbitmq:
+    addresses: 10.255.50.23:31501
+    password: Water@4399
+    publisher-returns: false
+    username: root
+    virtual-host: /
+    connection-timeout: 10s
+    publisher-confirm-type: correlated
+    listener:
+      type: simple
+      simple:
+        acknowledge-mode: AUTO
+        #本地每个消费者线程缓存最大unack数
+        prefetch: 250
+        #最小消费者线程
+        concurrency: 1
+        #最大消费者线程
+        max-concurrency: 1
+        #开启批量消费
+        #consumer-batch-enabled: true
+        #batch-size: 10
+        retry:
+          #开启重试
+          enabled: true
+          #最大重试次数
+          max-attempts: 1
+          #最小重试间隔
+          initial-interval: 1000ms
+          #最大重试间隔
+          max-interval: 5000ms
+          #系数
+          multiplier: 2
+
+  shardingsphere:
+    database:
+      name: test
+    datasource:
+      names: master
+      master:
+        type: com.linkcircle.ss.LHikariDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        jdbcUrl: jdbc:mysql://172.16.252.130:3306/test?characterEncoding=UTF-8&useSSL=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowMultiQueries=true&nullCatalogMeansCurrent=true
+        username: root
+        #password: cqt@1234
+        password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+        connection-timeout: 120000
+        maximum-pool-size: 10
+        minimum-idle: 10
+        idle-timeout: 30000
+        max-lifetime: 900000
+        connection-test-query: select 1
+        validation-timeout: 3000
+    rules:
+      sharding:
+        tables:
+          test:
+#            logicTable: test
+            actualDataNodes: master.test_*
+            tableStrategy:
+              complex:
+                shardingColumns: id,create_time
+                shardingAlgorithmName: custom-test-complex
+        shardingAlgorithms:
+          #复合分片
+          custom-test-complex:
+            type: CLASS_BASED
+            props:
+              strategy: COMPLEX #标准分片类型
+              algorithmClassName: com.yyl.CustomComplexKeysShardingAlgorithm
+
+
+#  datasource:
+#    dynamic:
+#      enabled: false
+#      datasource:
+#        master:
+#          poolName: master
+#          type: com.linkcircle.ss.LHikariDataSource
+#          driverClassName: com.mysql.cj.jdbc.Driver
+##          url: jdbc:mysql://172.16.252.130:3306/test?characterEncoding=UTF-8&useSSL=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowMultiQueries=true&nullCatalogMeansCurrent=true
+#          url: jdbc:mysql://10.255.50.2:33010/linkasia?characterEncoding=UTF-8&useSSL=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowMultiQueries=true&nullCatalogMeansCurrent=true
+#          username: root
+##          password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+#          password: Ufw2Bw2MQBK/dGfYT2CY1dVff4IKVlqI0Wh557+AZrbuwpDvBPKYhCaFfxT6QlWPzf3ufrleCNauX4RlJfAO4w==
+#      primary: master
+#      hikari:
+#        maximum-pool-size: 10
+#        minimum-idle: 1
+#        connection-test-query: 'select 1'
+#        validation-timeout: 1000
+#        max-lifetime: 900000
+#        idle-timeout: 30000
+#        connection-timeout: 30000
+
+  sms:
+    msg-account: 922001
+    sms-url: http://58.220.50.130:7862/sms
+    msg-sign: 【承启通科技】
+    msgPwd: S4GnRB
+  mail:
+    host: smtp.qiye.163.com
+    username: zentao@linkcircle.cn
+    password: yPVu8w5q192R214H
+    properties:
+      mail:
+        smtp:
+          timeout: 120000
+
+rocketmq:
+  name-server: 172.16.252.113:9876
+  producer:
+    send-message-timeout: 120000
+    retry-next-server: false
+    retry-times-when-send-async-failed: 2
+    group: cancelOrderGroup
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+minio:
+  url: http://10.255.25.2:9001
+  access-key: admin
+  secret-key: cqt@minio1234
+  bucket: testbucket
+  downloadUrl: http://localhost:8084/minioDownload
+

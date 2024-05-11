@@ -1,0 +1,43 @@
+server:
+  port: 7001
+spring:
+  main:
+    allow-circular-references: true
+  # 数据库连接信息
+  datasource:
+    url: jdbc:mysql://172.16.252.130:3306/system?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 30
+      idle-timeout: 30000
+      pool-name: MyHikariCP
+      max-lifetime: 900000
+      connection-timeout: 10000
+      connection-test-query: select 1
+      validation-timeout: 2000
+    type: com.linkcircle.ss.LHikariDataSource
+  # redis 连接池配置信息
+  redis:
+    password: cqt!010@Redis
+    timeout: 10000ms
+    cluster:
+      nodes:
+        - 10.255.50.23:36540
+    cluster2:
+      active: false
+      nodes:
+        - 10.255.50.23:36540
+    jedis:
+      pool:
+        max-active: 5
+        min-idle: 1
+        max-idle: 3
+        max-wait: 30000ms
+logLevel: info
+logging.config: classpath:logback-level.xml
+
+
+

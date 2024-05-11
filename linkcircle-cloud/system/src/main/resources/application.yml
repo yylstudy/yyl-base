@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: system
+  cloud:
+    nacos:
+      server-addr: 172.16.252.111:8848
+      username: nacos
+      password: Nacos@4399
+      config:
+        namespace: linkcircle-cloud1
+      discovery:
+        namespace: linkcircle-cloud1
+  config:
+    import:
+      - optional:nacos:system.yaml

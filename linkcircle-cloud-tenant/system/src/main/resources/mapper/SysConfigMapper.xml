@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkcircle.system.mapper.SysConfigMapper">
+    <!-- 分页查询系统配置 -->
+    <select id="queryByPage" resultType="com.linkcircle.system.entity.SysConfig">
+        SELECT *
+        FROM sys_config
+        <where>
+            <if test="query.key != null and query.key != ''">
+                `key`=#{query.key}
+            </if>
+        </where>
+    </select>
+
+</mapper>

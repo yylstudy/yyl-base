@@ -1,0 +1,47 @@
+logLevel: info
+logging.config: classpath:logback-level.xml
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      httpclient:
+        responseTimeout: 15s
+        connectTimeout: 3000
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowCredentials: true
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+gateway:
+  route:
+    config:
+      data-type: nacos
+      group: DEFAULT_GROUP
+      data-id: gateway-router
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+    health:
+      sensitive: true
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+knife4j:
+  gateway:
+    enabled: true
+    routes:
+      - name: system
+        service-name: system
+        url: /system/v3/api-docs
+        context-path: /system
+      - name: demo
+        service-name: demo
+        url: /demo/v3/api-docs
+        context-path: /demo

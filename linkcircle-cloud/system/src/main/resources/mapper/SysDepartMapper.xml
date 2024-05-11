@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkcircle.system.mapper.SysDepartMapper">
+
+
+    <select id="listAll" resultType="com.linkcircle.system.dto.SysDepartDTO">
+        SELECT sys_depart.*,
+               pdepart.`name` as parentName
+        FROM sys_depart
+                 left join sys_depart pdepart on sys_depart.parent_id = pdepart.id
+        order by sort desc
+    </select>
+
+
+</mapper>

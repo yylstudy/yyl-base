@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkcircle.system.mapper.SysDepartMapper">
+
+
+    <select id="listAll" resultType="com.linkcircle.system.dto.SysDepartDTO">
+        SELECT sys_depart.*,
+               sys_user.username   as managerName,
+               pdepart.`name` as parentName
+        FROM sys_depart
+                 left join sys_user on sys_depart.manager_id = sys_user.id
+                 left join sys_depart pdepart on sys_depart.parent_id = pdepart.id
+                 where sys_depart.corp_id=#{corpId}
+        order by sort desc
+    </select>
+
+
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linkcircle.system.mapper.SysDictMapper">
+    <select id="query" resultType="com.linkcircle.system.entity.SysDict">
+        SELECT * FROM sys_dict
+        <where>
+            <if test="dto.dictCode != null and dto.dictCode !=''">
+                and dict_code=#{query.dictCode}
+            </if>
+        </where>
+        <if test="dto.sortItemList == null or dto.sortItemList.size == 0">
+            ORDER BY id DESC
+        </if>
+    </select>
+
+    <select id="getDictItemByDictCode" resultType="com.linkcircle.system.entity.SysDictItem">
+        SELECT b.* FROM sys_dict a,sys_dict_item b where a.id = b.dict_id and a.dict_code=#{dictCode}
+    </select>
+
+
+</mapper>
