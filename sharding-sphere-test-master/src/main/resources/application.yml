@@ -1,0 +1,77 @@
+threadNum: 40
+queueNum: 2000
+messageNum: 10
+queryNum: 100
+spring:
+  shardingsphere:
+    database:
+      name: test
+    datasource:
+      names: master
+      master:
+        type: com.zaxxer.hikari.HikariDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        jdbcUrl: jdbc:mysql://xx.xx.xx.xx:3306/test1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: root
+        connection-timeout: 120000
+        maximum-pool-size: 10
+        minimum-idle: 10
+        idle-timeout: 30000
+        max-lifetime: 900000
+        connection-test-query: select 1
+        validation-timeout: 3000
+    rules:
+      sharding:
+        tables:
+#          行表达式分片
+#          acr_record_transfer:
+#            actualDataNodes: master.acr_record_transfer_${0..9}
+#          复合分片
+          test:
+            actualDataNodes: master.test_*
+            tableStrategy:
+#              standard:
+#                shardingColumn: servicekey
+#                shardingAlgorithmName: acr-record-transfer-inline
+              complex:
+                shardingColumns: id,create_time
+                shardingAlgorithmName: custom-test-complex
+          #自定义分片
+#          test1_20220_95338:
+#            actualDataNodes: master.test1_20220${1..7}_95338
+#            tableStrategy:
+#              standard:
+#                shardingColumn: id
+#                shardingAlgorithmName: custom-shard-inline
+        shardingAlgorithms:
+          #行表达式分片
+#          acr-record-transfer-inline:
+#            type: INLINE
+#            props:
+#              algorithm-expression: acr_record_transfer_$->{servicekey % 10}
+          #自定义分片
+#          custom-shard-inline:
+#            type: CLASS_BASED
+#            props:
+#              strategy: STANDARD #标准分片类型
+#              algorithmClassName: com.yyl.PreciseShardingDatabaseAlgorithm
+          #复合分片
+          custom-test-complex:
+            type: CLASS_BASED
+            props:
+              strategy: COMPLEX #标准分片类型
+              algorithmClassName: com.yyl.CustomComplexKeysShardingAlgorithm
+    props:
+      sql-show: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" #暴露所有节点
+    health:
+      sensitive: true #关闭过滤敏感信息
+server:
+  port: 8080
+#      show-details: ALWAYS  #显示详细信息

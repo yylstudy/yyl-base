@@ -21,6 +21,7 @@
         <module>mybatis-plus-boot-starter</module>
 <!--        <module>otter</module>-->
         <module>redis-spring-boot-starter</module>
+        <module>sharding-sphere-test-master</module>
         <module>shardingsphere-jdbc-core-spring-boot-starter</module>
         <module>spring-boot-test</module>
     </modules>
