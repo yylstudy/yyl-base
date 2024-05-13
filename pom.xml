@@ -11,7 +11,7 @@
     <modules>
         <module>base-common</module>
         <module>dynamic-datasource-spring-boot-starter</module>
-        <module>lk-ss</module>
+<!--        <module>lk-ss</module>-->
         <module>leaf</module>
         <module>linkcircle-cloud</module>
         <module>linkcircle-cloud-tenant</module>
