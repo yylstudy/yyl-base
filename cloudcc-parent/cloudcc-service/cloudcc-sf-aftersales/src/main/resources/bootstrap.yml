@@ -1,0 +1,46 @@
+NACOS_SERVER: @server-addr@
+BACK_NACOS_SERVER: @back-server-addr@
+NACOS_USERNAME: @username@
+NACOS_PASSWORD: @password@
+NACOS_NAMESPACE: @namespace@
+NACOS_GROUP: @group@
+spring:
+  application:
+    name: @project.artifactId@
+  cloud:
+    nacos:
+      server-addr: ${NACOS_SERVER}
+      username: ${NACOS_USERNAME}
+      password: ${NACOS_PASSWORD}
+      config:
+        file-extension: yaml
+        namespace: ${NACOS_NAMESPACE}
+        group: ${NACOS_GROUP}
+        shared-configs:
+          - data-id: cloudcc-parent-common.yaml
+            group: ${NACOS_GROUP}
+            refresh: true
+          - data-id: cloudcc-parent-dubbo.yaml
+            group: ${NACOS_GROUP}
+            refresh: true
+      discovery:
+        namespace: ${NACOS_NAMESPACE}
+        group: ${NACOS_GROUP}
+  main:
+    allow-bean-definition-overriding: true
+
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  endpoint:
+    shutdown:
+      enabled: true
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  endpoints:
+    web:
+      exposure:
+        include: health,shutdown,metrics,prometheus

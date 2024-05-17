@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cqt.hmbc.mapper.AcrRecordMapper">
+
+    <!-- 查询条件拼接 -->
+    <sql id="findWhere">
+        <trim prefix="WHERE" prefixOverrides="and | or">
+            <if test="query.serviceKey != null and query.serviceKey != null">
+                <![CDATA[ AND  `servicekey` = #{query.serviceKey} ]]>
+            </if>
+            <if test="query.calledpartynumber != null and query.calledpartynumber != null">
+                <![CDATA[ AND  `calledpartynumber` = #{query.calledpartynumber} ]]>
+            </if>
+            <if test="query.callerNumbers != null">
+                AND `callingpartynumber` IN
+                <foreach item="number" collection="query.callerNumbers" open="(" close=")" separator=",">
+                    #{number}
+                </foreach>
+            </if>
+        </trim>
+    </sql>
+
+    <!-- 查询话单记录是否存在 -->
+    <select id="acrQuery" resultType="java.lang.Long">
+        SELECT 1
+        FROM ${query.tableName}
+        <include refid="findWhere"/>
+        LIMIT 1
+    </select>
+
+</mapper>

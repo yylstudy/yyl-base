@@ -1,0 +1,10 @@
+{
+  "versions": [
+    {
+      "version": "1.0.0",
+      "date": "2022-12-08",
+      "msg": "添加第三方话单推送"
+    }
+  ],
+  "artifactId": "【话单推送服务 private-number-hmyc-third-chinanet】"
+}

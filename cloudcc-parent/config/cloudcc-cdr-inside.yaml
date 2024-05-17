@@ -1,0 +1,21 @@
+server:
+  port: 5004
+  servlet:
+    context-path: /cloudcc-cdr-inside
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+feign:
+  httpclient:
+    connection-timeout: 10000
+    connection-timer-repeat: 10000
+
+pzinfo:
+  # 话单处理失败 循序次数
+  push-num: 3
+  # 话单处理失败 睡眠时间 毫秒
+  sleep: 1000

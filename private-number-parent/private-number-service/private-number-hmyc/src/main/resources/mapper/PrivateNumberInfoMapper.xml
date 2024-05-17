@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cqt.hmyc.web.numpool.mapper.PrivateNumberInfoMapper">
+
+    <select id="getNumberCountGroupByAreaCode" resultType="com.cqt.model.numpool.vo.NumberAreaCodeCountVO">
+        select area_code areaCode, count(1) count
+        from private_number_info
+        <where>
+            <if test="vccId != null and vccId != ''">
+                and vcc_id = #{vccId}
+            </if>
+            <if test="areaCode != null and areaCode != ''">
+                and area_code = #{areaCode}
+            </if>
+            <if test="poolType != null and poolType != ''">
+                and pool_type = #{poolType}
+            </if>
+            <if test="allocationFlag != null and allocationFlag != ''">
+                and allocation_flag = #{allocationFlag}
+            </if>
+        </where>
+        group by area_code
+    </select>
+
+    <select id="getAxyNumberList" resultType="java.lang.String">
+        select number
+        from private_number_info
+        <where>
+            <if test="vccId != null and vccId != ''">
+                and vcc_id = #{vccId}
+            </if>
+            <if test="areaCode != null and areaCode != ''">
+                and area_code = #{areaCode}
+            </if>
+            <if test="poolType != null and poolType != ''">
+                and pool_type = #{poolType}
+            </if>
+            <if test="allocationFlag != null and allocationFlag != ''">
+                and allocation_flag = #{allocationFlag}
+            </if>
+            <if test="numType != null and numType != ''">
+                and num_type = #{numType}
+            </if>
+        </where>
+        limit 10
+    </select>
+
+
+</mapper>

@@ -1,0 +1,10 @@
+{
+  "versions": [
+    {
+      "version": "2.0.3",
+      "date": "2022-08-09",
+      "msg": "添加第三方话单推送"
+    }
+  ],
+  "artifactId": "【通用号码推送服务 private-number-push】"
+}

@@ -1,0 +1,4 @@
+server:
+  port: 18868
+  servlet:
+    context-path: /private-test

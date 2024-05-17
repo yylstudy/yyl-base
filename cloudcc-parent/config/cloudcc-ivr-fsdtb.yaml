@@ -1,0 +1,27 @@
+server:
+  port: 5006
+  servlet:
+    context-path: /cloudcc-ivr-fsdtb
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+cloudcc:
+  configuration:
+    #排队超时时间
+    queue-timeout: 60
+    #留言超时时间
+    leave-message-timeout: 180
+    #服务时间路径
+    server_time_url: http://172.16.250.217:5006/cloudcc-ivr-fsdtb/sys/serviceTime/workingTimeCheck?timestrategyId=
+    #设置随路参数key的失效时间
+    uuid-expire-time: 72
+    #留言开始默认放音
+    default_leavemsg_start_vidiau: beginVidau.wav
+    #tts路径（百度）
+    tts-url: "http://172.16.250.100:8080/ttsutils/baidu/tts.wav"
+    #lua脚本路径
+    sbc-lua-url: "/home/lua/%s/cloudcc/"

@@ -1,0 +1,167 @@
+server:
+  port: 16601
+  servlet:
+    context-path: /private-hmyc-recycle
+  undertow:
+    buffer-size: 1024
+    threads:
+      io: 8
+      worker: 64
+    direct-buffers: true
+  tomcat:
+    threads:
+      max: 2000
+
+spring:
+  shardingsphere:
+    datasource:
+      names: master,ms,stats
+      master:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.46.40:3300/private_number?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: tyhmyc
+        password: GPj3Ne4dN1GsI01/2ly3yA4tYgjHSHq7TQPkyKWvOubyeMF/ME+qKqj9g5jdnoePkcPoryt5FQ3MiR26X/xPpg==
+        pool-name: private_number_pool
+        maximum-pool-size: 100
+        minimum-idle: 10
+        idle-timeout: 60000
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+      ms:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.19.13:3300/private_number_ms?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: tyhmyc
+        password: YCoEZh8oGGfaWCDCcrUADUrtXmE39OiqS7u4/FZ7AeVpw2NGACNjF38AVSnX7ZaSkMUvLRczjjmu4mYtuCFIlw==
+        pool-name: ms_pool
+        maximum-pool-size: 100
+        minimum-idle: 10
+        idle-timeout: 60000
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+      stats:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.46.40:3300/private_stats?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: private_number
+        password: LtFBqGeqKN8N6TjRPVVnu/fv7l+ACXbbVBzo3lM/WGgZGWzoCVDL8x0TTHU1Hfht7Nzneru2uHaE5gl6aAJ4zQ==
+        pool-name: ms_pool
+        maximum-pool-size: 100
+        minimum-idle: 10
+        idle-timeout: 60000
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+    sharding:
+      default-data-source-name: master
+      tables:
+        private_corp_suppliers:
+          actual-data-nodes: ms.private_corp_suppliers
+        private_corp_info:
+          actual-data-nodes: ms.private_corp_info
+        private_corp_business_info:
+          actual-data-nodes: ms.private_corp_business_info
+        private_number_info:
+          actual-data-nodes: ms.private_number_info
+        private_corp_number_pool:
+          actual-data-nodes: ms.private_corp_number_pool
+        private_bind_info_axb_his:
+          actual-data-nodes: master.private_bind_info_axb_his
+          table-strategy:
+            standard:
+              sharding-column: create_time
+              precise-algorithm-class-name: com.cqt.recycle.config.sharding.DatePreciseShardingAlgorithm
+              range-algorithm-class-name: com.cqt.recycle.config.sharding.DateRangeShardingAlgorithm
+        private_bind_axb_init_user_tel_pool:
+          actual-data-nodes: master.private_bind_axb_init_user_tel_pool
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.recycle.config.sharding.MyHintShardingAlgorithm
+    props:
+      sql:
+        show: false
+  main:
+    allow-bean-definition-overriding: true
+  redis:
+    password: cqt!010@Redis
+    masterConnectionPoolSize: 300
+    cluster:
+      nodes:
+        - 172.16.69.104:9100
+        - 172.16.69.105:9100
+        - 172.16.69.106:9100
+        - 172.16.69.107:9100
+        - 172.16.69.108:9100
+        - 172.16.69.109:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: B
+    cluster2:
+      # 激活异地机房
+      active: true
+      nodes:
+        - 172.16.73.9:9100
+        - 172.16.73.10:9100
+        - 172.16.73.11:9100
+        - 172.16.73.12:9100
+        - 172.16.73.13:9100
+        - 172.16.73.14:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: A
+    timeout: 10000
+    database: 0
+    jedis:
+      pool:
+        max-active: 500
+        max-wait: -1
+        max-idle: 50
+        min-idle: 10
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+
+hide:
+  # 线程池队列大小
+  maxQueueSize: 5000
+  # 回收axb可用号码周期, 过去30天内
+  offsetDay: 0
+  # new 是否开启scan db 任务
+  scanDbNewFlag: true
+  scanLimit: 10000
+  # 当前所属机房
+  currentLocation: B
+  corePoolSize: 8
+  serverIps:
+    - 172.16.73.1:16600
+    - 172.16.73.2:16600
+    - 172.16.73.3:16600
+    - 172.16.69.96:16600
+    - 172.16.69.97:16600
+    - 172.16.69.98:16600
+  syncUrl: http://%s/private-number/numbers/sync
+  # 同步号码池接口
+  syncNumberUrl: http://%s/private-number/api/v1/number/sync
+  # 同步企业信息接口
+  syncCorpInfoUrl: http://%s/private-number/api/v1/corp-business-info/delLocalVccInfo/%s
+  refreshUrl: http://%s/private-number/api/v1/number/refresh
+  # 异地nacos
+  backNacos: 172.16.72.210:8848
+
+xxljob:
+  accessToken:
+  adminAddresses: http://172.16.72.210:9068/xxl-job-admin/
+  logRetentionDays: 30
+  logPath: /home/smp/xxl-job/${spring.application.name}
+  address:
+  ip:
+  port: 26601
+  appName: ${spring.application.name}

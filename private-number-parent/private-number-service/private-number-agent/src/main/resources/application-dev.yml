@@ -1,0 +1,35 @@
+server:
+  port: 18802
+  servlet:
+    context-path: /private-agent
+  undertow:
+    buffer-size: 1024
+    threads:
+      io: 8
+      worker: 64
+    direct-buffers: true
+
+spring:
+  rabbitmq:
+    publisher-returns: true
+    listener:
+      simple:
+        acknowledge-mode: MANUAL
+        prefetch: 30
+        concurrency: 10
+        retry:
+          enabled: true
+          max-attempts: 3
+      type: SIMPLE
+    username: admin
+    password: cqt@1234
+    addresses: 172.16.251.10:5672
+    template:
+      #是否接收return消息的配置，true为接受confirm消息，默认为false
+      mandatory: true
+    virtual-host: media
+    publisher-confirm-type: SIMPLE
+  servlet:
+    multipart:
+      max-request-size: 100MB
+      max-file-size: 100MB

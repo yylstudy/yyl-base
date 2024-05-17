@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.repush.dao.mapper.SmsMapper">
+    <!-- 查询所有H码信息  -->
+    <select id="findAllHcode" resultType="map">
+        select telcode,
+               areacode
+        from t_hcode
+    </select>
+
+
+    <select id="findAllGsmCenter" resultType="map">
+        select areaCode, gsmCenter
+        from gsm_center_info
+    </select>
+
+
+    <select id="findAllWhiteList" resultType="String">
+        select white_word
+        from mt_white_list
+    </select>
+
+    <select id="findAllBlackList" resultType="String">
+        select black_word
+        from mt_black_list
+    </select>
+
+
+    <select id="findAllMultipleBlackList" resultType="String">
+        select black_words
+        from mt_multiple_black_list
+    </select>
+
+    <select id="findAllSmsFailedRequest" parameterType="String" resultType="com.repush.dao.domain.SmsFailedRequest">
+        select *
+        from sms_failed_request
+    </select>
+
+    <!--保存短信发送失败请求-->
+    <insert id="saveFailedRequest" parameterType="com.repush.dao.domain.SmsFailedRequest">
+        insert sms_failed_request
+        (ip,
+        vccId,
+        url,
+        json,
+        createTime,
+        updateTime,
+        failCode,
+        failReason,
+        repushCount)
+        values (
+        #{ip},
+        #{vccId},
+        #{url},
+        #{json},
+        #{createTime},
+        #{updateTime},
+        #{failCode},
+        #{failedReason},
+        #{repushCount}
+        )
+    </insert>
+
+    <update id="updateFailedRequest" parameterType="com.repush.dao.domain.SmsFailedRequest">
+        update sms_failed_request
+        set repushCount=#{repushCount},
+        updateTime=#{updateTime}
+        where id =#{id}
+    </update>
+
+
+    <delete id="delById" parameterType="String">
+        delete from sms_failed_request
+        where id=#{id}
+    </delete>
+
+    <select id="findAllNumberOperator" resultType="map">
+        select paragraph_num, operator
+        from ctdapi.paragrafh_num_operator
+    </select>
+
+    <!--判断表是否存在-->
+    <select id="isExistTable" parameterType="String" resultType="String">
+        show TABLES like #{tableName}
+    </select>
+
+    <update id="createSmsTable" parameterType="String">
+        CREATE TABLE IF NOT EXISTS ${tableName} (
+        `id` int(11) NOT NULL AUTO_INCREMENT,
+        `streamNumber` varchar(64) DEFAULT NULL COMMENT '流水号',
+        `messageId` varchar(64) DEFAULT NULL COMMENT '业务流水号',
+        `bindId` varchar(128) DEFAULT NULL COMMENT '绑定id',
+        `vccId` varchar(64) DEFAULT NULL COMMENT '企业标识',
+        `callerNumber` varchar(64) DEFAULT NULL COMMENT '发短信号码',
+        `inNumber` varchar(64) DEFAULT NULL COMMENT '入中间号',
+        `outNumber` varchar(64) DEFAULT NULL COMMENT '出中间号',
+        `calledNumber` varchar(64) DEFAULT NULL COMMENT '收短信号码',
+        `inContent` text COMMENT '短信内容',
+        `failCode` varchar(64) DEFAULT NULL COMMENT
+        '失败码【0：成功；9999：失败；1：命中黑名单；2：被叫为106开头；3：短信发送数量达到上限;4:短信中心不存在;5:不支持短信业务',
+        `failReason` varchar(64) DEFAULT NULL COMMENT '失败原因',
+        `requestTime` datetime DEFAULT NULL COMMENT '用户请求时间',
+        `sendTime` datetime DEFAULT NULL COMMENT '实际发送短信时间',
+        `smsNumber` int(100) DEFAULT NULL COMMENT '短信条数',
+        `supplierId` varchar(64) DEFAULT NULL COMMENT '供应商id',
+        `areaCode` varchar(6) DEFAULT NULL COMMENT '小号区号',
+        `remark` text COMMENT '备注',
+        PRIMARY KEY (`id`),
+        KEY `idx_send_time` (`sendTime`),
+        KEY `idx_bind_id` (`bindId`),
+        KEY `idx_message_id` (`messageId`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+    </update>
+
+    <insert id="saveSmsSdr" parameterType="com.repush.dao.domain.SmsSdr">
+        INSERT INTO ${tableName}
+        ( `streamNumber`,
+        `messageId`,
+        `bindId`,
+        `vccId`,
+        `callerNumber`,
+        `inNumber`,
+        `outNumber`,
+        `calledNumber`,
+        `inContent`,
+        `failCode`,
+        `failReason`,
+        `requestTime`,
+        `sendTime`,
+        `smsNumber`,
+        `supplierId`,
+        `areaCode`,
+        `remark`)
+        VALUES (#{streamNumber},
+        #{messageId},
+        #{bindId},
+        #{vccId},
+        #{callerNumber},
+        #{inNumber},
+        #{outNumber},
+        #{calledNumber},
+        #{inContent},
+        #{failCode},
+        #{failReason},
+        #{requestTime},
+        #{sendTime},
+        #{smsNumber},
+        #{supplierId},
+        #{areaCode},
+        #{remark}
+        );
+    </insert>
+
+    <insert id="saveSmsFailedStatePush" parameterType="com.repush.dao.domain.SmsStatePush">
+        INSERT INTO ctdapi.mt_fail_sms_state_push
+        ( `id`,
+        `vccId`,
+        `url`,
+        `ip`,
+        `num`,
+        `err_msg`,
+        `json`)
+        VALUES
+        ( #{id},
+        #{vccid},
+        #{url},
+        #{ip},
+        #{num},
+        #{errMsg},
+        #{json}
+        );
+    </insert>
+
+    <insert id="saveLostMsg" parameterType="com.repush.dao.domain.LostMsg">
+        INSERT INTO sms_sdr_lost_record
+        ( `id`,
+        `msgId`,
+        `caller`,
+        `imsi`,
+        `totalNum`,
+        `lostNum`,
+        `content`)
+        VALUES (#{id},
+        #{msgId},
+        #{caller},
+        #{imsi},
+        #{totalNum},
+        #{lostNum},
+        #{content}
+        );
+    </insert>
+</mapper>

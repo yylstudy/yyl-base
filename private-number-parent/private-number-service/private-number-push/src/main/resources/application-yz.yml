@@ -1,0 +1,62 @@
+server:
+  port: 17613
+  servlet:
+    context-path: /private-push
+  undertow:
+    buffer-size: 1024
+    threads:
+      io: 8
+      worker: 64
+    direct-buffers: true
+
+spring:
+  application:
+    name: meituan-push
+  datasource:
+    url: jdbc:mysql://10.100.1.24/ctdapi?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: cqt
+    password: cqt!010@linkcircle
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      pool-name: MyHikariCP
+      minimum-idle: 30
+      idle-timeout: 600000
+      maximum-pool-size: 30
+      max-lifetime: 1800000
+      connection-timeout: 60000
+  rabbitmq:
+    publisher-returns: true
+    listener:
+      direct:
+        acknowledge-mode: manual
+        prefetch: 10
+        consumers-per-queue: 3
+      simple:
+        acknowledge-mode: manual
+        prefetch: 10
+        concurrency: 3
+    username: fsbc
+    password: fsbc_0591_...
+    addresses: 10.100.1.21:5672
+    template:
+      #是否接收return消息的配置，true为接受confirm消息，默认为false
+      mandatory: false #延时队列开启则no_route，应关闭
+    virtual-host: fsbc
+    publisher-confirm-type: simple
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com.alibaba.nacos: error
+
+push:
+  url: http://open.waimai.meituan.com/privateNumber/pushCallBill
+  retry:
+    minute: 5 # mq重新推送分钟数
+    num: 3  # mq重推次数

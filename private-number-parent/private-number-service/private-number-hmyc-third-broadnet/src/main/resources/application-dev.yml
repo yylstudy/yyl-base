@@ -1,0 +1,191 @@
+server:
+  port: 16607
+  servlet:
+    context-path: /private-number-hmyc-third-broadnet
+  undertow:
+    buffer-size: 1024
+    threads:
+      io: 8
+      worker: 64
+    direct-buffers: true
+
+spring:
+  cloud:
+    refresh:
+      never-refreshable: com.zaxxer.hikari.HikariDataSource,com.linkcircle.ss.LHikariDataSource
+  shardingsphere:
+    datasource:
+      names: master,ms,net
+      master:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.246.28:3300/private_number?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: cincc
+        password: NbQIcSKAlYQgp50Sn+picmz5S2xn+ip40WNhn+Bfb2zoYVD+36rjQ7/8ldNA1uTgkMlrjFWkf0nIheuRm8N2bQ==
+        pool-name: master-pool
+        maximum-pool-size: 30
+        minimum-idle: 30
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+      ms:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.246.28:3300/private_number_ms?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: cincc
+        password: NbQIcSKAlYQgp50Sn+picmz5S2xn+ip40WNhn+Bfb2zoYVD+36rjQ7/8ldNA1uTgkMlrjFWkf0nIheuRm8N2bQ==
+        pool-name: ms-pool
+        maximum-pool-size: 30
+        minimum-idle: 30
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+      net:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.246.28:3300/broad_net?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: cincc
+        password: NbQIcSKAlYQgp50Sn+picmz5S2xn+ip40WNhn+Bfb2zoYVD+36rjQ7/8ldNA1uTgkMlrjFWkf0nIheuRm8N2bQ==
+        pool-name: net-pool
+        maximum-pool-size: 30
+        minimum-idle: 30
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+    sharding:
+      default-data-source-name: master
+      tables:
+        call_bil_info:
+          actual-data-nodes: net.call_bil_info
+        record_info:
+          actual-data-nodes: net.record_info
+        private_supplier_info:
+          actual-data-nodes: ms.private_supplier_info
+        t_hcode:
+          actual-data-nodes: ms.t_hcode
+        private_number_info:
+          actual-data-nodes: ms.private_number_info
+        private_corp_number_pool:
+          actual-data-nodes: ms.private_corp_number_pool
+        private_corp_info:
+          actual-data-nodes: ms.private_corp_info
+        private_corp_business_info:
+          actual-data-nodes: ms.private_corp_business_info
+        private_supplier_url_config:
+          actual-data-nodes: ms.private_supplier_url_config
+        private_bind_info_axb:
+          actual-data-nodes: master.private_bind_info_axb
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.common.algorithm.MyHintShardingAlgorithm
+        private_bind_info_axb_his:
+          actual-data-nodes: master.private_bind_info_axb_his
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.common.algorithm.MyHintShardingAlgorithm
+
+    props:
+      sql.show: false
+      max.connections.size.per.query: 5
+  main:
+    allow-bean-definition-overriding: true
+  redis:
+    password: cqt!010@Redis
+    masterConnectionPoolSize: 100
+    cluster:
+      location: A
+      nodes:
+        - 172.16.246.47:9201
+        - 172.16.246.47:9202
+        - 172.16.246.47:9203
+        - 172.16.246.47:9204
+        - 172.16.246.48:9201
+        - 172.16.246.48:9202
+        - 172.16.246.48:9203
+        - 172.16.246.48:9204
+        - 172.16.246.49:9201
+        - 172.16.246.49:9202
+        - 172.16.246.49:9203
+        - 172.16.246.49:9204
+        - 172.16.246.50:9201
+        - 172.16.246.50:9202
+        - 172.16.246.50:9203
+        - 172.16.246.50:9204
+    timeout: 5000
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        max-wait: -1
+  rabbitmq:
+    # 开启动态创建队列和监听器
+    dynamic: true
+    publisher-returns: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 20
+        concurrency: 5
+    username: cqt
+    password: cqt!010@Rabbitmq
+    addresses: 172.16.246.20:5672
+    template:
+      #是否接收return消息的配置，true为接受confirm消息，默认为false
+      mandatory: false #延时队列开启则no_route，应关闭
+    virtual-host: fsbc
+    publisher-confirm-type: simple
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com.cqt.broadnet.web.bind.mapper.axb: debug
+    com.alibaba.nacos: error
+
+private-number:
+  call:
+    # 查询绑定信息url
+    getBindInfoUrl: https://172.16.246.10:9066/api-gateway/private-number/api/v1/bind/getBindInfo
+    # 超时时间
+    timeout: 1000
+    pushTimeout: 1000
+    interval: 10s
+    maxRetry: 3
+    appKey: K01101
+    secretKey: e7a8fd9b4f7c6430d6c8ed00fe62f99f
+
+hide:
+  # X号码回收延时队列, 按小时范围分队列
+  deadQueueIndexList: 1,2,3,4,5,6,7,8,9,10
+  # X号码回收延时队列, 按秒 精确分队列
+  deadQueueSecondIndexList: 10
+  # 线程池 最大阻塞队列大小
+  maxQueueSize: 20000
+  # 核心线程数
+  corePoolSize: 8
+  # 有效期超过 s 不推延时队列, 定时任务回收
+  longestExpiration: 108000
+  # 回收延时增加10秒
+  delayTimeout: 10
+
+xxljob:
+  accessToken:
+  adminAddresses: http://172.16.251.53:38080/xxl-job-admin/
+  # adminAddresses: http://10.255.251.3:8081/xxl-job-admin/
+  logRetentionDays: 30
+  logPath: /home/smp/xxl-job/${spring.application.name}
+  address:
+  ip:
+  port: 26604
+  appName: ${spring.application.name}
+  title: 通用隐私号-广电服务
+  userName: admin
+  password: cqt!010@Xxljob

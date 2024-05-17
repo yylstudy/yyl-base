@@ -1,0 +1,47 @@
+[
+  {
+    "id": "private-number-hmyc",
+    "order": 0,
+    "predicates": [
+      {
+        "args": {
+          "pattern": "/private-number/api/v1/**"
+        },
+        "name": "Path"
+      }
+    ],
+    "metadata": {
+      "response-timeout": 5000,
+      "connect-timeout": 5000
+    },
+    "filters": [
+      {
+        "args": {
+          "name": "myCircuitBreaker",
+          "fallbackUri": "forward:/fallback"
+        },
+        "name": "AllExceptionCircuitBreaker"
+      }
+    ],
+    "uri": "lb://private-number-hmyc"
+  },
+  {
+    "id": "private-number-hmyc-third",
+    "order": 1,
+    "predicates": [
+      {
+        "args": {
+          "pattern": "/private-number/**"
+        },
+        "name": "Path"
+      }
+    ],
+    "metadata": {
+      "response-timeout": 5000,
+      "connect-timeout": 5000
+    },
+    "filters": [
+    ],
+    "uri": "lb://private-number-hmyc-third"
+  }
+]

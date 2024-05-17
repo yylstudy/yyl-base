@@ -1,0 +1,41 @@
+{
+  "versions": [
+    {
+      "version": "2.5.3",
+      "date": "2023-04-10",
+      "msg": "号码池信息查询"
+    },
+    {
+      "version": "2.4.1",
+      "date": "2023-02-28",
+      "msg": "AXE绑定关系分表字段创建"
+    },
+    {
+      "version": "2.2.0",
+      "date": "2023-02-10",
+      "msg": "同步供应商权重信息到nacos"
+    },
+    {
+      "version": "2.1.0",
+      "date": "2022-09-16",
+      "msg": "增加private_stats相关表自动创建; 切换绑定机房接口"
+    },
+    {
+      "version": "2.0.3",
+      "date": "2022-08-25",
+      "msg": "企业信息同步到nacos, 绑定关系表新增字段supplierId, 代码结构调整"
+    },
+    {
+      "version": "2.0.0",
+      "date": "2022-06-30",
+      "msg": "优化号码池同步, 和企业信息同步"
+    },
+    {
+      "version": "1.0.0",
+      "date": "2022-02-24",
+      "msg": "项目初始化"
+    }
+  ],
+  "artifactId": "【通用号码池操作回收服务 private-number-recycle】",
+  "inherit": true
+}

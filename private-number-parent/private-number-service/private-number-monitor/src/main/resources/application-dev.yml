@@ -1,0 +1,65 @@
+server:
+  port: 17622
+  servlet:
+    context-path: /monitor
+  undertow:
+    buffer-size: 1024
+    threads:
+      io: 8
+      worker: 64
+    direct-buffers: true
+
+spring:
+  datasource:
+    dynamic:
+      primary: master # 设置默认的数据源或者数据源组,默认值即为master
+      strict: false #设置严格模式,默认false不启动. 启动后在未匹配到指定数据源时候会抛出异常,不启动则使用默认数据源.
+      datasource:
+        master:
+          url: jdbc:mysql://172.16.251.72:3300/ctdapi?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
+          username: root
+          password: cqt@1234
+          driver-class-name: com.mysql.cj.jdbc.Driver
+      hikari:
+        min-idle: 30
+        max-pool-size: 30
+        idle-timeout: 60000
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com.alibaba.nacos: error
+
+xxljob:
+  accessToken:
+  adminAddresses: http://172.16.251.53:38080/xxl-job-admin/
+  logRetentionDays: 30
+  logPath: /home/smp/xxl-job/${spring.application.name}
+  address:
+  ip:
+  port: 9999
+  appName: ${spring.application.name}
+
+monitor:
+  openMonitor: true     # 是否开启监控
+  msrnNum: 1            # 漫游号错误次数达到时切换
+  autoRecover: true     # 是否自动恢复
+ding:
+  robotUrlList:
+    - https://oapi.dingtalk.com/robot/send?access_token=71a1c3449ff5e866568e05a399dbf86913a1ee2f98b8071fd3dbd4ee8ddad526  #   钉钉告警url
+    - https://oapi.dingtalk.com/robot/send?access_token=98f3209bb985d3ae65395e54e2a78ee6b2fac17cf6c198b09b6c19047b770291
+    - https://oapi.dingtalk.com/robot/send?access_token=2a6e421ce76b5d1fce3079d37b2069ab7218b9a3191c09cd494c1b2e076759f1
+    - https://oapi.dingtalk.com/robot/send?access_token=10cf27a27c4c36656025cc1d5ab801993509f43d301868aa4b2c6f9487d0ced8
+    - https://oapi.dingtalk.com/robot/send?access_token=3523cc53b20c4e5e399ad8134ab2598763ea0492fed79eaac1b2ebde2b163948
+    - https://oapi.dingtalk.com/robot/send?access_token=bb509948dfaaf32739a1301b0c68954664d5f054df6c729e7de6e416babf8234
+    - https://oapi.dingtalk.com/robot/send?access_token=cd8012e131779638ddd939b0698c6a9b7a7556970dac117587b23e99756646d0
+  dingSecret: SEC62ff0002bd506a7275ba4995a17ab5d79c8e6a8bc29f55a60d7ab86e35390b0a    # 钉钉秘钥

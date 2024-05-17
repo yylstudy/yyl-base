@@ -1,0 +1,240 @@
+server:
+  port: 18803
+  servlet:
+    context-path: /private-number
+  tomcat:
+    threads:
+      max: 2000
+  undertow:
+    buffer-size: 1024
+    threads:
+      io: 16
+      worker: 64
+    direct-buffers: true
+
+spring:
+  shardingsphere:
+    datasource:
+      names: master,ms
+      master:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.251.72:3300/private-number?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: root
+        password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+        pool-name: MyHikari
+        maximum-pool-size: 30
+        minimum-idle: 30
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+      ms:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.251.72:3300/private_number_ms?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: root
+        password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+        pool-name: MyHikari
+        maximum-pool-size: 30
+        minimum-idle: 30
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+    sharding:
+      default-data-source-name: master
+      tables:
+        private_number_info:
+          actual-data-nodes: ms.private_number_info
+        private_corp_number_pool:
+          actual-data-nodes: ms.private_corp_number_pool
+        private_corp_info:
+          actual-data-nodes: ms.private_corp_info
+        private_corp_business_info:
+          actual-data-nodes: ms.private_corp_business_info
+        private_supplier_url_config:
+          actual-data-nodes: ms.private_supplier_url_config
+        private_bind_info_axb:
+          actual-data-nodes: master.private_bind_info_axb
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+        private_bind_info_axb_his:
+          actual-data-nodes: master.private_bind_info_axb_his
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+
+    props:
+      sql:
+        show: false
+  main:
+    allow-bean-definition-overriding: true
+
+  redis:
+    password: cqt@1234
+    masterConnectionPoolSize: 600
+    cluster:
+      nodes:
+        - 172.16.251.74:9100
+        - 172.16.251.75:9100
+        - 172.16.251.76:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: A
+    cluster2:
+      # 激活异地机房
+      active: true
+      nodes:
+        - 172.16.251.87:9100
+        - 172.16.251.88:9100
+        - 172.16.251.89:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: B
+    timeout: 10000
+    database: 0
+    jedis:
+      pool:
+        max-active: 200
+        max-wait: -1
+        max-idle: 50
+        min-idle: 10
+  rabbitmq:
+    publisher-returns: false
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 30
+        concurrency: 10
+        max-concurrency: 20
+        retry:
+          enabled: true
+          max-attempts: 3
+      type: simple
+    username: admin
+    password: cqt@1234
+    addresses: 172.16.251.78:5672
+    # addresses: 172.16.251.10:5672
+    template:
+      #是否接收return消息的配置，true为接受confirm消息，默认为false
+      mandatory: false
+    virtual-host: fsbc
+    publisher-confirm-type: none
+
+  rabbitmq-bind:
+    # 是否激活 bindRabbitTemplate
+    active: true
+    publisher-returns: false
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 30
+        concurrency: 10
+        max-concurrency: 20
+        retry:
+          enabled: true
+          max-attempts: 3
+      type: simple
+    username: admin
+    password: cqt@1234
+    addresses: 172.16.251.78:5672
+    # addresses: 172.16.251.10:5672
+    template:
+      #是否接收return消息的配置，true为接受confirm消息，默认为false
+      mandatory: false
+    virtual-host: bind
+    publisher-confirm-type: none
+
+  cloud:
+    refresh:
+      never-refreshable: com.zaxxer.hikari.HikariDataSource,com.linkcircle.ss.LHikariDataSource
+    sentinel:
+      transport:
+        dashboard: 172.16.251.17:8080
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: non_null
+  mvc:
+    servlet:
+      load-on-startup: 0
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+private-number-push:
+  ribbon:
+    nacos:
+      group: iccp
+    NFLoadBalancerRuleClassName: com.cqt.hmyc.config.balancer.NacosRandomWeightRule
+
+private-number-sms:
+  ribbon:
+    nacos:
+      group: iccp
+    NFLoadBalancerRuleClassName: com.cqt.hmyc.config.balancer.NacosRandomWeightRule
+
+private-number-ms-base-setting:
+  ribbon:
+    nacos:
+      group: iccp
+    NFLoadBalancerRuleClassName: com.cqt.hmyc.config.balancer.NacosRandomWeightRule
+
+
+logging:
+  level:
+    com:
+      alibaba:
+        nacos: warn
+feign:
+  httpclient:
+    connection-timer-repeat: 10000
+    connection-timeout: 10000
+    max-connections: 1000
+    max-connections-per-route: 100
+  sentinel:
+    enabled: true
+
+hide:
+  # X号码回收延时队列, 按小时范围分队列
+  deadQueueIndexList: 1,2,3,4,5,6,7,8,9,10
+  # X号码回收延时队列, 按秒 精确分队列
+  deadQueueSecondIndexList: 10
+  # 线程池 最大阻塞队列大小
+  maxQueueSize: 20000
+  # 核心线程数
+  corePoolSize: 8
+  # 有效期超过 s 不推延时队列, 定时任务回收
+  longestExpiration: 108000
+  # 回收延时增加10秒
+  delayTimeout: 10
+
+xxljob:
+  accessToken:
+  adminAddresses: http://172.16.251.53:38080/xxl-job-admin/
+  logRetentionDays: 30
+  logPath: /home/smp/xxl-job/${spring.application.name}
+  address:
+  ip:
+  port: 28802
+  appName: ${spring.application.name}
+#第三方 属性配置
+third:
+  #第三方
+  hdh:
+    #第三方 供应商id
+    supplierId: hdh
+    #第三方 appId
+    appId: FT0003
+    #第三方 platformid
+    platformid: bjcqtkwnmyuodprr
+    #第三方 secret
+    secret: b28446028bade9bd
+    #第三方 放音编码对应关系
+    audioCodeDataId: hdh-audio-code.json
+  #第三方 全局属性
+  prop:
+    #第三方 接口异常达到次数 告警
+    warnMax: 20

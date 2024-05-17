@@ -1,0 +1,26 @@
+{
+  "versions": [
+    {
+      "version": "2.2.0",
+      "date": "2022-12-05",
+      "msg": "青海移动-中间号监控"
+    },
+    {
+      "version": "2.1.0",
+      "date": "2022-11-21",
+      "msg": "话务事件监控"
+    },
+    {
+      "version": "1.1.0",
+      "date": "2022-03-21",
+      "msg": "监控 绑定关系rabbitmq, 使用Java代码创建连接"
+    },
+    {
+      "version": "1.0.0",
+      "date": "2022-03-02",
+      "msg": "监控 redis, rabbitmq 异常切换业务"
+    }
+  ],
+  "artifactId": "【通用号码隐藏-监控服务 private-number-monitor】",
+  "inherit": true
+}

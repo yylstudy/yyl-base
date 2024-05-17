@@ -1,0 +1,53 @@
+server:
+  port: 5002
+  servlet:
+    context-path: /cloudcc-sdk-interface
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+ 
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+    
+# aes加密信息
+cloudcc:
+  secret-info:
+    key: VGSs88YCJ9HJfPkZ
+    iv: 2HO21pQX3KLkLglb
+
+xxljob:
+  accessToken: 
+  adminAddresses: http://172.16.251.223:8800/xxl-job-admin
+  #adminAddresses: 
+  logRetentionDays: 30
+  logPath: /home/smp/xxl-job/${spring.application.name}-7
+  address:
+  ip:
+  port: 25002
+  appName: ${spring.application.name}
+  title: 呼叫中心-SDK服务-7
+  userName: admin
+  password: cqt!010@Xxljob
+
+
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  endpoint:
+    shutdown:
+      enabled: true
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+#        include: health,shutdown,metrics,prometheus,threaddump,heapdump

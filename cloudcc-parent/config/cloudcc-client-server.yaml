@@ -1,0 +1,14 @@
+server:
+  port: 5001
+  servlet:
+    context-path: /cloudcc-client-server
+
+netty:
+  port: 25001
+  url: /msg
+  callType: call,hold,mute,hangup,consult,dtmf,eavesdrop,whisper,substitute,interrupt_call,force_call,callin,pickup,trans,three_way,change_media,consult_to_trans
+  interfaceType: change_status,agent_change,checkout,get_status
+  readOutTime: 30
+  reconnectionTime: 30
+  syncUrl: http://{}:${server.port}${server.servlet.context-path}/netty/sendMsgToClient
+  readerIdleCloseChannel: true

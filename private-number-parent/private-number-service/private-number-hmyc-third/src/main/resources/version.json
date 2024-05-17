@@ -1,0 +1,21 @@
+{
+  "versions": [
+    {
+      "version": "2.5.4",
+      "date": "2023-04-19",
+      "msg": "供应商信息读取表和redis"
+    },
+    {
+      "version": "2.2.0",
+      "date": "2023-02-10",
+      "msg": "绑定id生成规则修改"
+    },
+    {
+      "version": "1.0.0",
+      "date": "2022-07-21",
+      "msg": "调用第三方绑定服务"
+    }
+  ],
+  "artifactId": "【通用号码分配服务 private-number-hmyc-third】",
+  "inherit": true
+}

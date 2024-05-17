@@ -1,0 +1,251 @@
+version: '1'
+services:
+  # 前端对接netty服务
+  cloudcc-client-server:
+    container_name: cloudcc-client-server
+    #    hostname: cloudcc-client-server
+    image: 58.220.49.186:11000/cloudcc/cloudcc-client-server:${VERSION}
+    restart: always
+    privileged: true
+    volumes:
+      - /home/smp/logs/cloudcc-client-server:/home/smp/logs/cloudcc-client-server
+      - /etc/hosts:/etc/hosts
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: Asia/Shanghai
+      NACOS_SERVER: ${NACOS_SERVER}
+      BACK_NACOS_SERVER: ${BACK_NACOS_SERVER}
+      NACOS_NAMESPACE: ${NACOS_NAMESPACE}
+      DUBBO_IP_TO_REGISTRY: ${SERVER_IP}
+      DUBBO_IP_TO_BIND: ${SERVER_IP}
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: 172.16.251.52:11800
+      SW_AGENT_NAME: cloudcc-client-server
+      SW_AGENT_INSTANCE_NAME: cloudcc-client-server-${SERVER_IP}
+      JAVA_OPTS: -Xms3g -Xmx3g -Xmn2g -Xss512k -XX:-OmitStackTraceInFastThrow  -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/smp/logs/cloudcc-client-server/java_heapdump.hprof -Ddubbo.network.interface.preferred=eth0 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5101
+    network_mode: host
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 5G
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --silent --fail http://127.0.0.1:5001/cloudcc-client-server/actuator/health || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      start_period: 300s
+      retries: 3
+    cap_add:
+      - SYS_PTRACE
+
+  # 话务控制服务
+  cloudcc-call-control:
+    container_name: cloudcc-call-control
+    #    hostname: cloudcc-call-control
+    image: 58.220.49.186:11000/cloudcc/cloudcc-call-control:${VERSION}
+    restart: always
+    privileged: true
+    volumes:
+      - /home/smp/logs/cloudcc-call-control:/home/smp/logs/cloudcc-call-control
+      - /etc/hosts:/etc/hosts
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: Asia/Shanghai
+      NACOS_SERVER: ${NACOS_SERVER}
+      BACK_NACOS_SERVER: ${BACK_NACOS_SERVER}
+      NACOS_NAMESPACE: ${NACOS_NAMESPACE}
+      DUBBO_IP_TO_REGISTRY: ${SERVER_IP}
+      DUBBO_IP_TO_BIND: ${SERVER_IP}
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: 172.16.251.52:11800
+      SW_AGENT_NAME: cloudcc-call-control
+      SW_AGENT_INSTANCE_NAME: cloudcc-call-control-${SERVER_IP}
+      JAVA_OPTS: -Xms3g -Xmx3g -Xmn2g -Xss512k -XX:-OmitStackTraceInFastThrow  -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/smp/logs/cloudcc-call-control/java_heapdump.hprof -Ddubbo.network.interface.preferred=eth0 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5100
+    network_mode: host
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 5G
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --silent --fail http://127.0.0.1:5000/cloudcc-call-control/actuator/health || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      start_period: 300s
+      retries: 3
+    cap_add:
+      - SYS_PTRACE
+
+  # SDK接口  坐席状态变迁
+  cloudcc-sdk-interface:
+    container_name: cloudcc-sdk-interface
+    #    hostname: cloudcc-sdk-interface
+    image: 58.220.49.186:11000/cloudcc/cloudcc-sdk-interface:${VERSION}
+    restart: always
+    privileged: true
+    volumes:
+      - /home/smp/logs/cloudcc-sdk-interface:/home/smp/logs/cloudcc-sdk-interface
+      - /etc/hosts:/etc/hosts
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: Asia/Shanghai
+      NACOS_SERVER: ${NACOS_SERVER}
+      BACK_NACOS_SERVER: ${BACK_NACOS_SERVER}
+      NACOS_NAMESPACE: ${NACOS_NAMESPACE}
+      DUBBO_IP_TO_REGISTRY: ${SERVER_IP}
+      DUBBO_IP_TO_BIND: ${SERVER_IP}
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: 172.16.251.52:11800
+      SW_AGENT_NAME: cloudcc-sdk-interface
+      SW_AGENT_INSTANCE_NAME: cloudcc-sdk-interface-${SERVER_IP}
+      JAVA_OPTS: -Xms3g -Xmx3g -Xmn2g -Xss512k -XX:-OmitStackTraceInFastThrow  -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/smp/logs/cloudcc-sdk-interface/java_heapdump.hprof -Ddubbo.network.interface.preferred=eth0 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5102
+    network_mode: host
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 5G
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --silent --fail http://127.0.0.1:5002/cloudcc-sdk-interface/actuator/health || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      start_period: 300s
+      retries: 3
+    cap_add:
+      - SYS_PTRACE
+
+  # 排队控制
+  cloudcc-queue-control:
+    container_name: cloudcc-queue-control
+    #    hostname: cloudcc-queue-control
+    image: 58.220.49.186:11000/cloudcc/cloudcc-queue-control:${VERSION}
+    restart: always
+    privileged: true
+    volumes:
+      - /home/smp/logs/cloudcc-queue-control:/home/smp/logs/cloudcc-queue-control
+      - /etc/hosts:/etc/hosts
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: Asia/Shanghai
+      NACOS_SERVER: ${NACOS_SERVER}
+      BACK_NACOS_SERVER: ${BACK_NACOS_SERVER}
+      NACOS_NAMESPACE: ${NACOS_NAMESPACE}
+      DUBBO_IP_TO_REGISTRY: ${SERVER_IP}
+      DUBBO_IP_TO_BIND: ${SERVER_IP}
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: 172.16.251.52:11800
+      SW_AGENT_NAME: cloudcc-queue-control
+      SW_AGENT_INSTANCE_NAME: cloudcc-queue-control-${SERVER_IP}
+      JAVA_OPTS: -Xms3g -Xmx3g -Xmn2g -Xss512k -XX:-OmitStackTraceInFastThrow  -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/smp/logs/cloudcc-queue-control/java_heapdump.hprof -Ddubbo.network.interface.preferred=eth0 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5103
+    network_mode: host
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 5G
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --silent --fail http://127.0.0.1:5003/cloudcc-queue-control/actuator/health || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      start_period: 300s
+      retries: 3
+    cap_add:
+      - SYS_PTRACE
+
+  # 内部话单
+  cloudcc-cdr-inside:
+    container_name: cloudcc-cdr-inside
+    hostname: cloudcc-cdr-inside
+    image: 58.220.49.186:11000/cloudcc/cloudcc-cdr-inside:${VERSION}
+    restart: always
+    privileged: true
+    volumes:
+      - /home/smp/logs/cloudcc-cdr-inside:/home/smp/logs/cloudcc-cdr-inside
+      - /etc/hosts:/etc/hosts
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: Asia/Shanghai
+      NACOS_SERVER: ${NACOS_SERVER}
+      BACK_NACOS_SERVER: ${BACK_NACOS_SERVER}
+      NACOS_NAMESPACE: ${NACOS_NAMESPACE}
+      DUBBO_IP_TO_REGISTRY: ${SERVER_IP}
+      DUBBO_IP_TO_BIND: ${SERVER_IP}
+      JAVA_OPTS: -Ddubbo.network.interface.preferred=eth0 -Xms512M -Xmx512M -Xmn256M -XX:-OmitStackTraceInFastThrow -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/smp/logs/cloudcc-cdr-inside/java_heapdump.hprof
+    network_mode: host
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 3G
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --silent --fail http://127.0.0.1:5004/cloudcc-cdr-inside/actuator/health || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      start_period: 300s
+      retries: 3
+    cap_add:
+      - SYS_PTRACE
+
+  # 外部话单
+  cloudcc-cdr-outside:
+    container_name: cloudcc-cdr-outside
+    hostname: cloudcc-cdr-outside
+    image: 58.220.49.186:11000/cloudcc/cloudcc-cdr-outside:${VERSION}
+    restart: always
+    privileged: true
+    volumes:
+      - /home/smp/logs/cloudcc-cdr-outside:/home/smp/logs/cloudcc-cdr-outside
+      - /etc/hosts:/etc/hosts
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: Asia/Shanghai
+      NACOS_SERVER: ${NACOS_SERVER}
+      BACK_NACOS_SERVER: ${BACK_NACOS_SERVER}
+      NACOS_NAMESPACE: ${NACOS_NAMESPACE}
+      DUBBO_IP_TO_REGISTRY: ${SERVER_IP}
+      DUBBO_IP_TO_BIND: ${SERVER_IP}
+      JAVA_OPTS: -Ddubbo.network.interface.preferred=eth0 -Xms512M -Xmx512M -Xmn256M  -XX:-OmitStackTraceInFastThrow -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/smp/logs/cloudcc-cdr-outside/java_heapdump.hprof
+    network_mode: host
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 3G
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --silent --fail http://127.0.0.1:5005/cloudcc-cdr-outside/actuator/health || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      start_period: 300s
+      retries: 3
+    cap_add:
+      - SYS_PTRACE
+
+  # ivr生成
+  cloudcc-ivr-fsdtb:
+    container_name: cloudcc-ivr-fsdtb
+    # hostname: cloudcc-ivr-fsdtb
+    image: 58.220.49.186:11000/cloudcc/cloudcc-ivr-fsdtb:${VERSION}
+    restart: always
+    privileged: true
+    volumes:
+      - /home/smp/logs/cloudcc-ivr-fsdtb:/home/smp/logs/cloudcc-ivr-fsdtb
+      - /etc/hosts:/etc/hosts
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: Asia/Shanghai
+      NACOS_SERVER: ${NACOS_SERVER}
+      BACK_NACOS_SERVER: ${BACK_NACOS_SERVER}
+      NACOS_NAMESPACE: ${NACOS_NAMESPACE}
+      DUBBO_IP_TO_REGISTRY: ${SERVER_IP}
+      DUBBO_IP_TO_BIND: ${SERVER_IP}
+      JAVA_OPTS: -Ddubbo.network.interface.preferred=eth0 -Xms512M -Xmx512M -Xmn256M  -XX:-OmitStackTraceInFastThrow -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/smp/logs/cloudcc-ivr-fsdtb/java_heapdump.hprof
+    network_mode: host
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --silent --fail http://127.0.0.1:5006/cloudcc-ivr-fsdtb/actuator/health || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      start_period: 300s
+      retries: 3
+    cap_add:
+      - SYS_PTRACE

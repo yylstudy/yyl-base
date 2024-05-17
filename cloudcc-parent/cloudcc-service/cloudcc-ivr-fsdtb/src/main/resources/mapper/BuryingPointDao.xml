@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqt.ivr.mapper.BuryingPointDao">
+
+	<insert id="insertAllsByMonth" parameterType="com.cqt.ivr.entity.dto.BuryingPointReq">
+		insert into
+		tx_company_ivr_${company_code}_${month}
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="uuid != null" >
+				uuid,
+			</if>
+			<if test="ivrType != null" >
+				ivr_type,
+			</if>
+			<if test="triggerTime != null" >
+				trigger_time,
+			</if>
+			<if test="subIvrType != null" >
+				sub_ivr_type,
+			</if>
+			<if test="callType != null" >
+				call_type,
+			</if>
+			<if test="language != null" >
+				language,
+			</if>
+			<if test="submissionCode != null" >
+				submission_code,
+			</if>
+			<if test="ivrDetailType != null" >
+				ivr_detail_type,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="uuid != null" >
+				#{uuid,jdbcType=VARCHAR},
+			</if>
+			<if test="ivrType != null" >
+				#{ivrType,jdbcType=INTEGER},
+			</if>
+			<if test="triggerTime != null" >
+				#{triggerTime,jdbcType=VARCHAR},
+			</if>
+			<if test="subIvrType != null" >
+				#{subIvrType,jdbcType=INTEGER},
+			</if>
+			<if test="callType != null" >
+				#{callType,jdbcType=INTEGER},
+			</if>
+			<if test="language != null" >
+				#{language,jdbcType=INTEGER},
+			</if>
+			<if test="submissionCode != null" >
+				#{submissionCode,jdbcType=INTEGER},
+			</if>
+			<if test="ivrDetailType != null" >
+				#{ivrDetailType,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+
+	<select id="getBuryingPointInfo" resultType="com.cqt.ivr.entity.dto.BuryingPointReq" parameterType="com.cqt.ivr.entity.dto.BuryingPointReq">
+		SELECT
+			uuid,
+			ivr_type ivrType,
+			trigger_time triggerTime,
+			sub_ivr_type,
+			call_type,
+			language,
+			submission_code submissionCode,
+			ivr_detail_type ivrDetailType
+		FROM
+			tx_company_ivr_${company_code}_${month}
+		WHERE
+			uuid = #{uuid}
+		ORDER BY trigger_time DESC
+	</select>
+
+	<select id="superManagerSelect" parameterType="java.lang.String">
+
+        ${value}
+
+  </select>
+
+</mapper>

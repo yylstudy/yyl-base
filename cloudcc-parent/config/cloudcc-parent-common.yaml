@@ -1,0 +1,97 @@
+spring:
+  datasource:
+    dynamic:
+      primary: ms
+      strict: true
+      datasource:
+        cdr:
+          url: jdbc:mysql://172.16.250.141:3300/cloudcc_cdr?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
+          username: root
+          password: cqt@fj889977
+          type: com.zaxxer.hikari.HikariDataSource
+        ms:
+          url: jdbc:mysql://172.16.250.141:3300/cloudcc_ms?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
+          username: root
+          password: cqt@fj889977
+          type: com.zaxxer.hikari.HikariDataSource
+        smp:
+          url: jdbc:mysql://172.16.250.141:3300/smp?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
+          username: root
+          password: cqt@fj889977
+          type: com.zaxxer.hikari.HikariDataSource
+      hikari:
+        min-idle: 10
+        max-pool-size: 100
+        idle-timeout: 60000
+        max-lifetime: 600000
+        connection-timeout: 3000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+  redis:
+    password: C@hjzx531sider
+    masterConnectionPoolSize: 200
+    cluster:
+      nodes:
+        - 172.16.250.141:9105
+      max-redirects: 5
+      location: A
+    cluster2:
+      # 激活异地机房
+      active: false
+      nodes:
+        - 172.16.250.141:9105
+      max-redirects: 5
+      location: B
+    timeout: 10000
+    database: 0
+    lettuce:
+      pool:
+        maxIdle: 8
+        minIdle: 0
+        maxActive: 8
+        timeBetweenEvictionRuns: 600s
+
+rocketmq:
+  name-server: 172.16.250.140:9876;172.16.250.141:9876;172.16.250.142:9876
+  consumer:
+    group: ${spring.application.name}
+    # 一次拉取消息最大值，注意是拉取消息的最大值而非消费最大值
+    pull-batch-size: 100
+    access-key: cqtcloudcc
+    secret-key: cqt@2020
+  producer:
+    access-key: cqtcloudcc
+    secret-key: cqt@2020
+    # 发送同一类消息的设置为同一个group，保证唯一
+    group: ${spring.application.name}
+    # 发送消息超时时间，默认3000
+    send-message-timeout: 3000
+    # 发送消息失败重试次数，默认2
+    retry-times-when-send-failed: 2
+    # 异步消息重试此处，默认2
+    retry-times-when-send-async-failed: 2
+    # 消息最大长度，默认1024 * 1024 * 4(默认4M)
+    max-message-size: 4194304
+    # 压缩消息阈值，默认4k(1024 * 4)
+    compress-message-body-threshold: 4096
+    # 是否在内部发送失败时重试另一个broker，默认false
+    retry-next-server: true
+
+# 动态表名
+dynamic:
+  table-rule:
+    # 逻辑表名(不带后缀) : 真实表名模板
+    cloudcc_main_cdr: cloudcc_main_cdr_{company_code}_{month}
+    cloudcc_cdr_channeldata: cloudcc_cdr_channeldata_{company_code}_{month}
+    cloudcc_sub_cdr: cloudcc_sub_cdr_{company_code}_{month}
+    acr_record: acr_record_{company_code}_{month}
+    cc_push_err: cc_push_err_{company_code}_{month}
+    cloudcc_leave_message: cloudcc_leave_message_{company_code}_{month}
+    cloudcc_ext_status_log: cloudcc_ext_status_log_{company_code}_{month}
+    cloudcc_agent_status_log: cloudcc_agent_status_log_{company_code}_{month}
+
+cloudcc:
+  base:
+    # 底层接口地址
+    base-url: http://172.16.251.206/basecomapi/
+    service-code: cloudcc

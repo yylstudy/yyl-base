@@ -1,0 +1,111 @@
+server:
+  port: 18881
+  servlet:
+    context-path: /private-num-sms
+  undertow:
+    buffer-size: 1024
+    threads:
+      io: 8
+      worker: 64
+    direct-buffers: true
+spring:
+  application:
+    name: private-num-sms
+  datasource:
+    url: jdbc:mysql://172.16.251.72:3300/private-number?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: cqt@1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      pool-name: MyHikariCP
+      minimum-idle: 30
+      idle-timeout: 600000
+      maximum-pool-size: 30
+      max-lifetime: 1800000
+      connection-timeout: 60000
+  redis:
+    password: cqt@1234
+    masterConnectionPoolSize: 600
+    cluster:
+      nodes:
+        - 172.16.251.47:9100
+        - 172.16.251.48:9100
+        - 172.16.251.49:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: A
+    cluster2:
+      # 激活异地机房
+      active: true
+      nodes:
+        - 172.16.251.61:9100
+        - 172.16.251.62:9100
+        - 172.16.251.63:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: B
+    timeout: 10000
+    database: 0
+    jedis:
+      pool:
+        max-active: 200
+        max-wait: -1
+        max-idle: 50
+        min-idle: 10
+  rabbitmq:
+    publisher-returns: true
+    listener:
+      direct:
+        acknowledge-mode: manual
+        prefetch: 10
+        consumers-per-queue: 3
+      simple:
+        acknowledge-mode: manual
+        prefetch: 10
+        concurrency: 3
+    username: admin
+    password: cqt@1234
+    addresses: 172.16.251.78:5672
+    template:
+      #是否接收return消息的配置，true为接受confirm消息，默认为false
+      mandatory: true
+    virtual-host: meituan
+    publisher-confirm-type: simple
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+sms:
+  url: http://thirdapiwaimai-test.meituan.com/privateNumber/pushCallBill
+iccp:
+  statePushUrl: http://callback-test.pstn.avc.qcloud.com/directDial/meituanNotifySms?id=chengqitong
+  mapUrl: http://vccidsms/vccidsms/sendSms
+  # getCallerUrl: http://172.16.251.69:18613/mt-hmyc/api/v1/bind/queryBindInfo?
+  getCallerUrl: http://172.16.251.36:18800/private-number/api/v1/query/bindInfo?
+  secret: 1234
+  appKey: 173
+  appId: 65712
+  updateListUrl: /mt-sms/updateList?type=
+  updateNode: 172.16.251.68:18881
+
+# xxljob:
+#   accessToken:
+#   adminAddresses: http://127.0.0.1:8080/xxl-job-admin/
+#   logRetentionDays: 30
+#   logPath: /Users/youngder/java/private-number-parent/private-num-sms/xxjob
+#   address:
+#   ip:
+#   port: 18880
+#   appName: iccp-sms
+
+private-push:
+  retry-num: 3   # 推送失败重推次数
+  retryMinute: 1 # 推送失败的重推时间  分钟
+
+#腾讯短信转发个性化参数
+tx-sms:
+  #app-id: 123 #应用ID
+  #dev-id: 2345 #开发者ID
+  sdk-app-id: 12345 #客户应用ID, 由腾讯侧提供。需要与X号码绑定区分

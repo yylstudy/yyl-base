@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.cqt</groupId>
+    <artifactId>private-number-parent</artifactId>
+    <version>${revision}</version>
+    <name>private-number-parent</name>
+    <description>private-number-parent</description>
+    <packaging>pom</packaging>
+
+    <!--子模块-->
+    <modules>
+        <module>private-number-model</module>
+        <module>private-number-common</module>
+        <module>private-number-starter</module>
+        <module>private-number-cloud-api</module>
+        <module>private-number-service</module>
+    </modules>
+
+    <!--属性-->
+    <properties>
+        <revision>2.9.3</revision>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <java.version>1.8</java.version>
+        <!-- springboot 版本-->
+        <spring-boot.version>2.3.12.RELEASE</spring-boot.version>
+        <!-- spring cloud 版本 -->
+        <spring-cloud.version>Hoxton.SR12</spring-cloud.version>
+        <!-- spring cloud alibaba 版本 -->
+        <!-- 具体版本对应关系见：https://github.com/alibaba/spring-cloud-alibaba/wiki/%E7%89%88%E6%9C%AC%E8%AF%B4%E6%98%8E -->
+        <spring-cloud-alibaba.version>2.2.7.RELEASE</spring-cloud-alibaba.version>
+        <!--<spring-cloud.version>Hoxton.SR8</spring-cloud.version>
+        &lt;!&ndash; spring cloud alibaba 版本 &ndash;&gt;
+        &lt;!&ndash; 具体版本对应关系见：https://github.com/alibaba/spring-cloud-alibaba/wiki/%E7%89%88%E6%9C%AC%E8%AF%B4%E6%98%8E &ndash;&gt;
+        <spring-cloud-alibaba.version>2.2.3.RELEASE</spring-cloud-alibaba.version>-->
+        <guava.version>30.0-jre</guava.version>
+        <fastjson.version>1.2.83</fastjson.version>
+        <hutool.version>5.8.4</hutool.version>
+        <zipkin.version>2.11.8</zipkin.version>
+        <knife4j.version>2.0.2</knife4j.version>
+        <nimbus.jwt.version>8.16</nimbus.jwt.version>
+        <mysql.version>8.0.28</mysql.version>
+        <mybatis.plus.datasource.version>3.4.1</mybatis.plus.datasource.version>
+        <mybatis.plus.version>3.4.3</mybatis.plus.version>
+        <mybatis.plus.extension.version>3.4.3</mybatis.plus.extension.version>
+        <skywalking.log.version>8.6.0</skywalking.log.version>
+        <redisson.version>3.15.0</redisson.version>
+        <nacos.version>2.0.3</nacos.version>
+        <mapstruct.version>1.3.1.Final</mapstruct.version>
+        <sharding-sphere.version>4.1.1</sharding-sphere.version>
+        <poi.version>4.1.2</poi.version>
+        <xxl.job.version>2.3.1</xxl.job.version>
+        <xxljob-starter.version>2.3.0</xxljob-starter.version>
+        <log4j2.version>2.20.0</log4j2.version>
+        <rocketmq.boot.version>2.2.1</rocketmq.boot.version>
+        <rocketmq.version>4.9.2</rocketmq.version>
+        <lk-ss.version>1.4</lk-ss.version>
+        <forest.version>1.5.24</forest.version>
+        <spring-web.version>5.2.25.RELEASE</spring-web.version>
+    </properties>
+
+    <!--依赖管理-->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>${log4j2.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring-web.version}</version>
+            </dependency>
+
+            <!-- 加了这个就不需要加版本号了 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>private-number-qinghai-ali-common</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>private-number-starter-rabbitmq</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>private-number-starter-redis</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>private-number-starter-xxljob</artifactId>
+                <version>${xxljob-starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>private-number-cloud-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.linkcircle</groupId>
+                <artifactId>lk-ss</artifactId>
+                <version>${lk-ss.version}</version>
+            </dependency>
+
+            <!--<dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-client</artifactId>
+                <version>${rocketmq.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-acl</artifactId>
+                <version>${rocketmq.version}</version>
+            </dependency>-->
+
+            <dependency>
+                <groupId>com.alibaba.nacos</groupId>
+                <artifactId>nacos-client</artifactId>
+                <version>${nacos.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-log4j2</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+
+            <!--SW trace 跟踪-->
+            <dependency>
+                <groupId>org.apache.skywalking</groupId>
+                <artifactId>apm-toolkit-log4j-2.x</artifactId>
+                <version>${skywalking.log.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>private-number-model</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>private-number-common</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.28</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis.plus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <version>${mybatis.plus.datasource.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-jdk8</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+                <version>${sharding-sphere.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>sharding-core-api</artifactId>
+                <version>${sharding-sphere.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${xxl.job.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.dtflys.forest</groupId>
+                <artifactId>forest-spring-boot-starter</artifactId>
+                <version>${forest.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <!--构建工具-->
+    <build>
+        <plugins>
+            <!--修改版本号version
+                mvn versions:set -DnewVersion=2.1.0
+                mvn versions:revert
+                mvn versions:commit
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.3</version>
+            </plugin>
+        </plugins>
+        <resources>
+            <!--需要配置 不然profiles 无法找到需要替换哪些配置文件-->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.yml</include>
+                    <include>**/*.json</include>
+                    <include>**/*.properties</include>
+                    <include>**/*.lua</include>
+                    <include>**/*.yaml</include>
+                    <include>**/*.factories</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+    <!--maven仓库-->
+     <repositories>
+         <repository>
+             <id>maven-ali-public</id>
+             <url>https://maven.aliyun.com/repository/public</url>
+             <releases>
+                 <enabled>true</enabled>
+             </releases>
+             <snapshots>
+                 <enabled>true</enabled>
+                 <updatePolicy>always</updatePolicy>
+                 <checksumPolicy>fail</checksumPolicy>
+             </snapshots>
+         </repository>
+         <repository>
+             <id>maven-ali-central</id>
+             <url>https://maven.aliyun.com/repository/central</url>
+             <releases>
+                 <enabled>true</enabled>
+             </releases>
+             <snapshots>
+                 <enabled>true</enabled>
+                 <updatePolicy>always</updatePolicy>
+                 <checksumPolicy>fail</checksumPolicy>
+             </snapshots>
+         </repository>
+     </repositories>
+
+    <!-- 环境 -->
+    <profiles>
+        <!-- 开发 -->
+        <profile>
+            <id>dev</id>
+            <properties>
+                <!--当前环境-->
+                <profile.name>dev</profile.name>
+                <!--配置文件前缀-->
+                <!--<prefix.name></prefix.name>-->
+                <!--Nacos地址-->
+                <server-addr>172.16.251.44:8848</server-addr>
+                <!--命名空间称-->
+                <namespace>iccp</namespace>
+                <!--分组名称-->
+                <group>iccp</group>
+                <username>cqt</username>
+                <password>cqt!010@Nacos</password>
+            </properties>
+        </profile>
+        <profile>
+            <id>test-A</id>
+            <activation>
+                <!--默认激活配置-->
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!--当前环境-->
+                <profile.name>test-A</profile.name>
+                <!--配置文件前缀-->
+                <!--<prefix.name></prefix.name>-->
+                <!--Nacos地址-->
+                <server-addr>172.16.251.77:8848</server-addr>
+                <!--命名空间称-->
+                <namespace>iccp</namespace>
+                <!--分组名称-->
+                <group>iccp</group>
+                <username>cqt</username>
+                <password>cqt!010@Nacos</password>
+            </properties>
+        </profile>
+        <profile>
+            <id>test-B</id>
+            <properties>
+                <!--当前环境-->
+                <profile.name>test-B</profile.name>
+                <!--配置文件前缀-->
+                <!--<prefix.name></prefix.name>-->
+                <!--Nacos地址-->
+                <server-addr>172.16.251.90:8848</server-addr>
+                <!--命名空间称-->
+                <namespace>iccp</namespace>
+                <!--分组名称-->
+                <group>iccp</group>
+                <username>cqt</username>
+                <password>cqt!010@Nacos</password>
+            </properties>
+        </profile>
+        <profile>
+            <id>pre</id>
+            <properties>
+                <!--当前环境-->
+                <profile.name>pre</profile.name>
+                <!--配置文件前缀-->
+                <!--<prefix.name></prefix.name>-->
+                <!--Nacos地址-->
+                <server-addr>172.16.246.21:8848</server-addr>
+                <!--命名空间称-->
+                <namespace>iccp</namespace>
+                <!--分组名称-->
+                <group>iccp</group>
+                <username>cqt</username>
+                <password>cqt!010@Nacos</password>
+            </properties>
+        </profile>
+        <!--ICSC生产-->
+        <profile>
+            <id>icsc-prod</id>
+            <properties>
+                <!--当前环境-->
+                <profile.name>icsc-prod</profile.name>
+                <!--配置文件前缀-->
+                <!--<prefix.name></prefix.name>-->
+                <!--Nacos地址-->
+                <server-addr>172.31.250.73:8847</server-addr>
+                <!--命名空间称-->
+                <namespace>sip</namespace>
+                <!--分组名称-->
+                <group>sip</group>
+                <username>nacos</username>
+                <password>Cqt!010@nacos</password>
+            </properties>
+        </profile>
+        <!-- ICSC预发 -->
+        <profile>
+            <id>icsc-pre</id>
+            <properties>
+                <!--当前环境-->
+                <profile.name>icsc-pre</profile.name>
+                <!--配置文件前缀-->
+                <!--<prefix.name></prefix.name>-->
+                <!--Nacos地址-->
+                <server-addr>172.16.246.229:8847</server-addr>
+                <!--命名空间称-->
+                <namespace>sip</namespace>
+                <!--分组名称-->
+                <group>sip</group>
+                <username>nacos</username>
+                <password>Cqt!010@nacos</password>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>qinghai-prod</id>
+            <properties>
+                <!--当前环境-->
+                <profile.name>qinghai-prod</profile.name>
+                <!--配置文件前缀-->
+                <!--<prefix.name></prefix.name>-->
+                <!--Nacos地址-->
+                <server-addr>10.110.2.231:8848</server-addr>
+                <!--命名空间称-->
+                <namespace>iccp</namespace>
+                <!--分组名称-->
+                <group>iccp</group>
+                <username>cqt</username>
+                <password>cqt!010@Nacos</password>
+            </properties>
+        </profile>
+    </profiles>
+</project>

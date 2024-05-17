@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqt.ivr.mapper.IvrFsdtbMapper">
+
+	<select id="appparabaseSelect" parameterType="java.lang.String" resultType="com.cqt.ivr.entity.Appparabase">
+        ${sql}
+    </select>
+
+	<select id="ivrbaseSelect" parameterType="java.lang.String" resultType="com.cqt.ivr.entity.Ivrbase">
+        ${sql}
+    </select>
+
+	<select id="elevaluebaseSelect" parameterType="java.lang.String" resultType="com.cqt.ivr.entity.Elevaluebase">
+        ${sql}
+    </select>
+
+	<select id="getAllCompanyCode" resultType="java.lang.String">
+		SELECT
+			company_code
+		FROM
+			`cloudcc_company_info`
+		<where>
+			state = 1
+		</where>
+	</select>
+
+</mapper>

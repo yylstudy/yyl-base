@@ -1,0 +1,165 @@
+server:
+  port: 18801
+  servlet:
+    context-path: /private-hmyc-recycle
+  undertow:
+    buffer-size: 1024
+    threads:
+      io: 8
+      worker: 64
+    direct-buffers: true
+  tomcat:
+    threads:
+      max: 2000
+
+spring:
+  datasource:
+    dynamic:
+      primary: stats
+      strict: false
+      datasource:
+        stats:
+          url: jdbc:mysql://172.16.251.72:3300/private_stats?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
+          username: root
+          password: cqt@1234
+          driver-class-name: com.mysql.cj.jdbc.Driver
+      hikari:
+        min-idle: 30
+        max-pool-size: 30
+        idle-timeout: 60000
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+  shardingsphere:
+    datasource:
+      names: master,ms
+      master:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.251.72:3300/private_number?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: root
+        password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+        pool-name: MyHikari
+        maximum-pool-size: 30
+        minimum-idle: 30
+        idle-timeout: 60000
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+      ms:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.251.72:3300/private_number_ms?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: root
+        password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+        pool-name: MyHikari
+        maximum-pool-size: 30
+        minimum-idle: 30
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+    sharding:
+      tables:
+        private_corp_suppliers:
+          actual-data-nodes: ms.private_corp_suppliers
+        private_corp_info:
+          actual-data-nodes: ms.private_corp_info
+        private_corp_business_info:
+          actual-data-nodes: ms.private_corp_business_info
+        private_number_info:
+          actual-data-nodes: ms.private_number_info
+        private_corp_number_pool:
+          actual-data-nodes: ms.private_corp_number_pool
+        private_bind_info_axb_his:
+          actual-data-nodes: master.private_bind_info_axb_his
+          table-strategy:
+            standard:
+              sharding-column: create_time
+              precise-algorithm-class-name: com.cqt.recycle.config.sharding.DatePreciseShardingAlgorithm
+              range-algorithm-class-name: com.cqt.recycle.config.sharding.DateRangeShardingAlgorithm
+        private_bind_axb_init_user_tel_pool:
+          actual-data-nodes: master.private_bind_axb_init_user_tel_pool
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.recycle.config.sharding.MyHintShardingAlgorithm
+      default-data-source-name: master
+    props:
+      sql:
+        show: false
+  main:
+    allow-bean-definition-overriding: true
+  redis:
+    password: cqt@1234
+    masterConnectionPoolSize: 500
+    cluster:
+      nodes:
+        - 172.16.251.74:9100
+        - 172.16.251.75:9100
+        - 172.16.251.76:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: A
+    cluster2:
+      # 激活异地机房
+      active: true
+      nodes:
+        - 172.16.251.87:9100
+        - 172.16.251.88:9100
+        - 172.16.251.89:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: B
+    timeout: 10000
+    database: 0
+    jedis:
+      pool:
+        max-active: 500
+        max-wait: -1
+        max-idle: 50
+        min-idle: 10
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+
+hide:
+  usedAllPoolFlag: true
+  # 线程池队列大小
+  maxQueueSize: 5000
+  # 回收axb可用号码周期, 过去30天内
+  offsetDay: 1
+  # new 是否开启scan db 任务
+  scanDbNewFlag: true
+  scanLimit: 10000
+  # 当前所属机房
+  currentLocation: B
+  corePoolSize: 8
+  serverIps:
+    - 172.16.251.68:18800
+    - 172.16.251.69:18800
+    - 172.16.251.81:18800
+    - 172.16.251.82:18800
+  syncUrl: http://%s/private-number/numbers/sync
+  syncNumberUrl: http://%s/private-number/api/v1/number/sync
+  syncCorpInfoUrl: http://%s/private-number/api/v1/corp-business-info/delLocalVccInfo/%s
+  refreshUrl: http://%s/private-number/api/v1/number/refresh
+  # 主池最大号码数
+  masterMaxNumber: 200
+  # 是否使用mysql查找真实用户
+  isMySQLSearch: true
+  vccid: 3545
+  backNacos: 172.16.251.90:8848
+
+xxljob:
+  accessToken:
+  adminAddresses: http://172.16.251.53:38080/xxl-job-admin/
+  logRetentionDays: 30
+  logPath: /home/smp/xxl-job/${spring.application.name}
+  address:
+  ip:
+  port: 9997
+  appName: ${spring.application.name}

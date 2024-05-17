@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cqt.recycle.web.numpool.mapper.PrivateCorpNumberPoolMapper">
+
+    <!-- 平台号码查询条件 -->
+    <sql id="findWhere">
+        <trim prefix="WHERE" prefixOverrides="and | or">
+            <if test="vccId != null and vccId != '' ">
+                <![CDATA[ AND `t1`.`vcc_id` = #{vccId} ]]>
+            </if>
+            <if test="query.poolType != null ">
+                <![CDATA[ AND `t1`.`pool_type` = #{query.poolType} ]]>
+            </if>
+            <if test="query.areaCode != null and  query.areaCode != '' ">
+                <![CDATA[ AND `t1`.`area_code` = #{query.areaCode} ]]>
+            </if>
+        </trim>
+    </sql>
+
+    <!-- 查询号码池 -->
+    <select id="queryNumberPool" resultType="com.cqt.model.numpool.entity.PrivateNumberInfo">
+        SELECT `area_code`, `number`
+        FROM `private_corp_number_pool` `t1`
+        INNER JOIN `private_corp_number_pool_number` `t2` ON `t1`.`id` = `t2`.`pool_id`
+        <include refid="findWhere"/>
+        LIMIT ${query.pageSize * (query.pageNum - 1)}, #{query.pageSize}
+    </select>
+
+    <!-- 查询号码池总数 -->
+    <select id="queryNumberAreaTotal" resultType="com.cqt.model.numpool.vo.NumberPoolVO">
+        SELECT `area_code`, COUNT(`number`) `total`
+        FROM `private_corp_number_pool` `t1`
+        INNER JOIN `private_corp_number_pool_number` `t2` ON `t1`.`id` = `t2`.`pool_id`
+        <include refid="findWhere"/>
+        GROUP BY `t1`.`area_code`
+    </select>
+</mapper>

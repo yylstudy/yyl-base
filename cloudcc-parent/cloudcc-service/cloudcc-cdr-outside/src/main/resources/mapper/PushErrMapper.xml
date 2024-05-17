@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cqt.cdr.mapper.PushErrMapper">
+
+    <resultMap id="BaseResultMap" type="com.cqt.cdr.entity.PushErr">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="reason" column="reason" jdbcType="VARCHAR"/>
+            <result property="ip" column="ip" jdbcType="VARCHAR"/>
+            <result property="state" column="state" jdbcType="VARCHAR"/>
+            <result property="updatetime" column="updatetime" jdbcType="VARCHAR"/>
+            <result property="createtime" column="createtime" jdbcType="VARCHAR"/>
+            <result property="json" column="json" jdbcType="VARCHAR"/>
+            <result property="url" column="url" jdbcType="VARCHAR"/>
+            <result property="vccid" column="vccid" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="VARCHAR"/>
+            <result property="reqcount" column="reqcount" jdbcType="VARCHAR"/>
+            <result property="reqstate" column="reqstate" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,reason,ip,
+        state,updatetime,createtime,
+        json,url,vccid,
+        type,reqcount,reqstate
+    </sql>
+
+    <select id="createTable" parameterType="String">
+        ${value}
+    </select>
+</mapper>

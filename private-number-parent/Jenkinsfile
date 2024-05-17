@@ -1,0 +1,136 @@
+pipeline {
+    agent any
+
+    environment {
+        WORKSPACE="/home/code/workspace/private-number-parent"
+    }
+
+    options {
+        // 设置管道运行的超时时间，在此之后，Jenkins将中止管道
+        timeout(time: 20, unit: 'MINUTES')
+        // 失败重试次数
+        // retry(1)
+        // 输出时间戳
+        timestamps()
+        // 表示保留10次构建历史
+		buildDiscarder(logRotator(numToKeepStr: '5'))
+		// 不允许同时执行流水线，被用来防止同时访问共享资源
+		disableConcurrentBuilds()
+    }
+
+    //构建触发器，Jenkins自动构建条件
+//     triggers{
+//         //每3分钟判断一次代码是否有变化
+//          pollSCM('H/3 * * * *')
+//     }
+
+    parameters {
+        string(name: 'GIT_BRANCH', defaultValue: 'v2.5.4', description: 'git分支')
+        string(name: 'GIT_URL', defaultValue: 'https://gitlab.linkcircle.cn/private_hmyc/iccp_hmyc/private-number-parent.git', description: 'git地址')
+        extendedChoice(
+            defaultValue: 'as68,as69,as81,as82',
+            description: '部署到哪些服务器？',
+            multiSelectDelimiter: ',',
+            name: 'DEPLOY_SERVERS',
+            quoteValue: false,
+            saveJSONParameterToFile: false,
+            type: 'PT_CHECKBOX',
+            value:'as68,as69,as81,as82,as14,as36',
+            visibleItemCount: 10
+        )
+        extendedChoice(
+            defaultValue: '',
+            description: '部署哪些服务?',
+            multiSelectDelimiter: ',',
+            name: 'DEPLOY_SERVICE',
+            quoteValue: false,
+            saveJSONParameterToFile: false,
+            type: 'PT_CHECKBOX',
+            value:'private-number-hmyc,private-number-recycle,private-number-hmyc-third,private-number-gateway,private-number-monitor',
+            visibleItemCount: 10
+        )
+
+    }
+
+    stages {
+        stage('checkout') {
+            steps {
+                sh 'echo ${DEPLOY_SERVERS}'
+                sh 'echo ${GIT_BRANCH}'
+                sh 'echo ${GIT_URL}'
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/${GIT_BRANCH}']],
+                    userRemoteConfigs: [[
+                        url: '${GIT_URL}',
+                        credentialsId: '80ab4344-f0f0-441e-ae28-df8949b5d19a'
+                    ]]
+                ])
+            }
+        }
+        stage('Build'){
+            steps {
+                script {
+                    // 获取选择的项目服务名称
+                    def project_service_name_select = "${DEPLOY_SERVICE}".split(",")
+                    def suffix = "private-number-service/"
+                    def build_project = ""
+                    for (project_service in project_service_name_select) {
+                        build_project = build_project + suffix + project_service + ","
+                    }
+                    echo "mvn clean -DskipTests=true package -am -pl " + build_project
+                    // 获取选择的服务器名称
+                    //def server_select = "${DEPLOY_SERVERS}".split(",")
+                    // for (server in server_select) {
+                    //    echo server
+                    //}
+                    sh "mvn clean -DskipTests=true package -am -pl " + build_project
+                }
+            }
+        }
+
+        stage('Deploy'){
+            steps {
+                script {
+                    // 获取选择的项目服务名称
+                    def project_service_name_select = "${DEPLOY_SERVICE}".split(",")
+                    // 要部署的服务器名称列表
+                    def server_select = "${DEPLOY_SERVERS}".split(",")
+
+                    for (project_service in project_service_name_select) {
+                        def remoteDirectory = "/home/springboot/" + project_service
+                        def execCommand = "/home/shellJob/restart-as.sh " + project_service
+                        def removePrefix = "private-number-service/" + project_service + "/target"
+                        def sourceFiles = removePrefix + "/*.jar"
+                        for (server in server_select) {
+                            echo "开始部署服务： " + project_service + ", 上传服务器： " + server
+                            sshPublisher(publishers: [
+                                sshPublisherDesc(configName: server,
+                                               transfers: [
+                                                 sshTransfer(cleanRemote: false,
+                                                             excludes: '',
+                                                             execCommand: execCommand,
+                                                             execTimeout: 120000,
+                                                             flatten: false,
+                                                             makeEmptyDirs: false,
+                                                             noDefaultExcludes: false,
+                                                             patternSeparator: '[, ]+',
+                                                             remoteDirectory: remoteDirectory,
+                                                             remoteDirectorySDF: '',
+                                                             removePrefix: removePrefix,
+                                                             sourceFiles: sourceFiles)
+                                               ],
+                                               usePromotionTimestamp: false,
+                                               useWorkspaceInPromotion: false,
+                                               verbose: true)
+                            ])
+                        }
+                    }
+
+                }
+            }
+        }
+
+
+    }
+}

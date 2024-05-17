@@ -1,0 +1,11 @@
+{
+	"versions": [
+		{
+			"version": "1.0.0",
+			"date": "2023-10-24",
+			"msg": "初始化版本."
+		}
+
+	],
+	"artifactId": "联通集团总部 private-number-china-unicom"
+}

@@ -1,0 +1,28 @@
+server:
+  port: 5000
+  servlet:
+    context-path: /cloudcc-call-control
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+feign:
+  httpclient:
+    connection-timeout: 10000
+    connection-timer-repeat: 10000
+
+cloudcc:
+  base:
+    event-topic: cloudcc
+    event-tag: '*'
+logging:
+  level:
+    com.cqt.call.strategy.event.impl.ExtStatusEventStrategyImpl: error

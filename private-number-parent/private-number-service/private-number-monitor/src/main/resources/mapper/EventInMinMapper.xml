@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cqt.monitor.web.callevent.mapper.EventInMinMapper">
+    <insert id="insertByCondition">
+        INSERT INTO ${tableName}
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            <if test="eventInMin.cdrCount != null">
+                cdr_count,
+            </if>
+            <if test="eventInMin.ringing != null">
+                ringing,
+            </if>
+            <if test="eventInMin.pickUpCount != null">
+                pick_up_count,
+            </if>
+            <if test="eventInMin.supplierId != null">
+                supplier_id,
+            </if>
+            <if test="eventInMin.pickUpRate != null">
+                pick_up_rate,
+            </if>
+            <if test="eventInMin.ringRate != null">
+                ring_rate,
+            </if>
+            <if test="eventInMin.vccId != null">
+                vcc_id,
+            </if>
+
+            <if test="eventInMin.areaCode != null">
+                area_code,
+            </if>
+
+            <if test="eventInMin.currentMin != null">
+                current_min,
+            </if>
+            <if test="eventInMin.platForm != null">
+                plat_form,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+
+            #{id},
+            <if test="eventInMin.cdrCount != null">
+                #{eventInMin.cdrCount},
+            </if>
+            <if test="eventInMin.ringing != null">
+                #{eventInMin.ringing},
+            </if>
+            <if test="eventInMin.pickUpCount != null">
+                #{eventInMin.pickUpCount},
+            </if>
+            <if test="eventInMin.supplierId != null">
+                #{eventInMin.supplierId},
+            </if>
+            <if test="eventInMin.pickUpRate != null">
+                #{eventInMin.pickUpRate},
+            </if>
+            <if test="eventInMin.ringRate != null">
+                #{eventInMin.ringRate},
+            </if>
+            <if test="eventInMin.vccId != null">
+                #{eventInMin.vccId},
+            </if>
+
+            <if test="eventInMin.areaCode != null">
+                #{eventInMin.areaCode},
+            </if>
+
+            <if test="eventInMin.currentMin != null">
+                #{eventInMin.currentMin},
+            </if>
+            <if test="eventInMin.platForm != null">
+                #{eventInMin.platForm},
+            </if>
+        </trim>
+
+    </insert>
+
+    <update id="createTable" parameterType="string">
+        CREATE TABLE `${tableName}` (
+                                        `id` varchar(64) NOT NULL COMMENT 'id',
+                                        `cdr_count` int(255) DEFAULT NULL COMMENT '话单量',
+                                        `ringing` int(255) DEFAULT NULL COMMENT '振铃量',
+                                        `pick_up_count` int(255) DEFAULT NULL COMMENT '接通量',
+                                        `vcc_id` varchar(8) DEFAULT NULL COMMENT '企业vccid',
+                                        `area_code` varchar(64) DEFAULT NULL COMMENT '地市编码',
+                                        `current_min` varchar(128) DEFAULT NULL COMMENT '当前时间（精确到统计的那一分钟）',
+                                        `plat_form` varchar(8) DEFAULT NULL COMMENT '所属平台',
+                                        `pick_up_rate` decimal(10,2) DEFAULT NULL COMMENT '接通率',
+                                        `ring_rate` decimal(10,2) DEFAULT NULL COMMENT '振铃率',
+                                        PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+    </update>
+
+    <select id="getPickupRate" resultType="map">
+        select SUM(cdr_count) cdr,SUM(pick_up_count) pickup
+        from ${tableName}
+        <where>
+            current_min = '${time}'
+        and
+           vcc_id = ${vccId}
+        </where>
+    </select>
+
+    <select id="getConcurrency" resultType="String">
+        select SUM(concurrency_num)
+        from ${tableName}
+        <where>
+            <if test="time != null and time != ''">
+                concurrency_time = '${time}'
+            </if>
+            <if test="vccId != null and vccId != ''">
+                and  vcc_id = ${vccId}
+            </if>
+
+        </where>
+    </select>
+</mapper>

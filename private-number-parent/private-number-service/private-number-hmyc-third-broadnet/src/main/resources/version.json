@@ -1,0 +1,11 @@
+{
+  "versions": [
+    {
+      "version": "2.4.0",
+      "date": "2023-02-15",
+      "msg": "对接广电接口"
+    }
+  ],
+  "artifactId": "【通用号码-对接广电 private-number-hmyc-third-broadnet】",
+  "inherit": true
+}

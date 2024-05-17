@@ -1,0 +1,59 @@
+{
+  // 营运商SBC dis组配置信息
+  "operator": {
+    // SBC服务器ip列表
+    "server": [
+      // "172.16.251.20",
+      // "172.16.251.21",
+      // "172.16.251.22",
+      // "172.16.251.23",
+      // "172.16.251.24",
+      "172.16.251.14",
+      "172.16.251.15"
+    ],
+    // dis组配置文件路径
+    "distributorConfigPath": "/usr/local/freeswitch/conf/autoload_configs/distributor.conf.xml",
+    // dis组名称
+    "disListName": "dis_test",
+    // dis组节点对应SN/ACD的服务器ip
+    "nodeInfo": {
+      "172.0.18.20": [
+        "jnmctd02"
+      ],
+      "172.16.251.3": [
+        "hxmctd02"
+      ]
+    },
+    // 是否开启
+    "enable": true
+  },
+  // 客户SBC dis组配置信息
+  "customer": {
+    "server": [
+      "172.16.1.1",
+      "172.16.1.2"
+    ],
+    "distributorConfigPath": "/usr/local/freeswitch/conf/autoload_configs/dis/IN-1004-IMS.xml",
+    "disListName": "CUSTOMER",
+    "nodeInfo": {
+      "acdIp1": [
+        "nodeName1"
+      ],
+      "acdIp2": [
+        "nodeName2"
+      ]
+    },
+    "enable": false
+  },
+  // as服务健康检测接口
+  "healthUrl": [
+    "http://172.0.18.20:16604/monitor/actuator/health",
+    "http://172.0.18.20:16604/monitor/actuator/health"
+  ],
+  // 健康检测接口请求超时时间
+  "timeout": 1000,
+  // 健康检测接口最大重试次数
+  "maxRetry": 2,
+  // 钉钉告警业务分组名称
+  "dingtalkGroup": "alarm"
+}

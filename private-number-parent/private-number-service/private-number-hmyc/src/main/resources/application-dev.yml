@@ -1,0 +1,412 @@
+server:
+  port: 18800
+  servlet:
+    context-path: /private-number
+  tomcat:
+    threads:
+      max: 2000
+  undertow:
+    buffer-size: 1024
+    threads:
+      io: 16
+      worker: 64
+    direct-buffers: true
+
+spring:
+  shardingsphere:
+    datasource:
+      default-data-source-name: bind0
+      names: bind0,bind1,bind2,bind3,ms
+      bind0:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.251.72:3300/private-number?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: root
+        password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+        pool-name: MyHikari
+        maximum-pool-size: 30
+        minimum-idle: 30
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+      bind1:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.251.72:3300/private-number?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: root
+        password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+        pool-name: MyHikari
+        maximum-pool-size: 30
+        minimum-idle: 30
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+      bind2:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.251.72:3300/private-number?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: root
+        password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+        pool-name: MyHikari
+        maximum-pool-size: 30
+        minimum-idle: 30
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+      bind3:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.251.72:3300/private-number?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: root
+        password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+        pool-name: MyHikari
+        maximum-pool-size: 30
+        minimum-idle: 30
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+      ms:
+        type: com.linkcircle.ss.LHikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://172.16.251.72:3300/private_number_ms?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+        username: root
+        password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+        pool-name: MyHikari
+        maximum-pool-size: 30
+        minimum-idle: 30
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+    props:
+      sql:
+        show: true
+    sharding:
+      tables:
+        private_number_info:
+          actual-data-nodes: ms.private_number_info
+        private_corp_number_pool:
+          actual-data-nodes: ms.private_corp_number_pool
+        private_corp_info:
+          actual-data-nodes: ms.private_corp_info
+        private_corp_business_info:
+          actual-data-nodes: ms.private_corp_business_info
+        private_bind_info_axb:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_axb
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_info_axb_his:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_axb_his
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_info_axeyb:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_axeyb
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_info_axeyb_his:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_axeyb_his
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_info_axe:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_axe
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_info_axe_his:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_axe_his
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_axb_init_user_tel_pool:
+          actual-data-nodes: bind$->{0..3}.private_bind_axb_init_user_tel_pool
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_info_axebn:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_axebn
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_info_axebn_his:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_axebn_his
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_info_ax:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_ax
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_info_ax_his:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_ax_his
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_info_axbn:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_axbn
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_info_axbn_his:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_axbn_his
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_axbn_real_tel:
+          actual-data-nodes: bind$->{0..3}.private_bind_axbn_real_tel
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_info_axyb:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_axyb
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+        private_bind_info_axg:
+          actual-data-nodes: bind$->{0..3}.private_bind_info_axg
+          table-strategy:
+            hint:
+              algorithmClassName: com.cqt.hmyc.config.algorithm.MyHintShardingAlgorithm
+          database-strategy:
+            standard:
+              sharding-column: bind_id
+              precise-algorithm-class-name: com.cqt.hmyc.config.algorithm.MyDataSourcePreciseAlgorithm
+
+  main:
+    allow-bean-definition-overriding: true
+
+  redis:
+    password: cqt@1234
+    masterConnectionPoolSize: 600
+    cluster:
+      nodes:
+        - 172.16.251.74:9100
+        - 172.16.251.75:9100
+        - 172.16.251.76:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: A
+    cluster2:
+      # 激活异地机房
+      active: true
+      nodes:
+        - 172.16.251.87:9100
+        - 172.16.251.88:9100
+        - 172.16.251.89:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: B
+    timeout: 10000
+    database: 0
+    jedis:
+      pool:
+        max-active: 200
+        max-wait: -1
+        max-idle: 50
+        min-idle: 10
+  rabbitmq:
+    publisher-returns: false
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 30
+        concurrency: 10
+        max-concurrency: 20
+        retry:
+          enabled: true
+          max-attempts: 3
+      type: simple
+    username: admin
+    password: cqt@1234
+    addresses: 172.16.251.78:5672
+    # addresses: 172.16.251.10:5672
+    template:
+      #是否接收return消息的配置，true为接受confirm消息，默认为false
+      mandatory: false
+    virtual-host: bind
+    publisher-confirm-type: none
+  cloud:
+    refresh:
+      never-refreshable: com.zaxxer.hikari.HikariDataSource,com.linkcircle.ss.LHikariDataSource
+    sentinel:
+      transport:
+        dashboard: 172.16.251.17:8080
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: non_null
+  mvc:
+    servlet:
+      load-on-startup: 0
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+private-number-push:
+  ribbon:
+    nacos:
+      group: iccp
+    NFLoadBalancerRuleClassName: com.cqt.hmyc.config.balancer.NacosRandomWeightRule
+
+
+hide:
+  # 鉴权排除的vccId
+  authExclude: 1007,3550,6602
+  setnxTimeout: 5
+  # 按小时分队列
+  deadQueueIndexList: 1,2,3,4,5,6,7,8,9,10
+  # 按秒分队列
+  deadQueueSecondIndexList: 10,20,30
+  # deadQueueIndexList: 1
+  # 线程池 最大阻塞队列大小
+  maxQueueSize: 20000
+  # rabbitmq最大通道数
+  channelMax: 65535
+  # 项目启动是否初始化分机号
+  initExtFlag: true
+  maxRequestTimeout: 1000
+  requestTimeout: 10
+  delayTimeout: 1
+  # 当前所属机房
+  currentLocation: A
+  vccId: 3545
+  # 拨测放音文件名
+  dialTestVoice: axb_playBackName.wav
+  # 拨测脚本命令
+  dialTestLuaCmd: fs_cli -x "bgapi lua tencent_meituan_axb_hmbc_1.0.0.lua %s"
+  # 地市转发机房 配置文件
+  areaLocationDataId: meituan-area-location.json
+  saveDb: true
+  # Axb 异常音
+  notBindIvr: exception.wav
+  # 放音编码与文件名对应关系
+  audioCodeDataId: meituan-audio-code.json
+  # 默认放音文件名 axe
+  digitsIvr: digitsIvr.wav
+  # 核心线程数
+  corePoolSize: 8
+  # 最大通话时长 s
+  maxDuration: 7200
+  # redis 绑定关系key默认超时时间 s 4小时 14400
+  defaultExpiration: 14400
+  longestExpiration: 259200
+  # 行业短信正则表达式
+  industrySmsNumberRegex: ^(106.*|10010)$
+  aybUnBindPush: false
+
+logging:
+  level:
+    com:
+      alibaba:
+        nacos: warn
+feign:
+  httpclient:
+    connection-timer-repeat: 10000
+    connection-timeout: 10000
+    max-connections: 1000
+    max-connections-per-route: 100
+  sentinel:
+    enabled: true
+
+
+xxljob:
+  accessToken:
+  adminAddresses: http://172.16.251.53:38080/xxl-job-admin/
+  logRetentionDays: 30
+  logPath: /home/smp/xxl-job/${spring.application.name}
+  address:
+  ip:
+  port: 9901
+  appName: ${spring.application.name}
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        # 滑动窗口的类型为时间窗口
+        sliding-window-type: TIME_BASED
+        # 时间窗口的大小为10秒
+        sliding-window-size: 10
+        # 在CircuitBreaker可以计算错误率之前，配置所需的最小呼叫数（每个滑动窗口时段）
+        minimum-number-of-calls: 1
+        # 在半开状态下允许进行正常调用的次数
+        permitted-number-of-calls-in-half-open-state: 3
+        # 熔断器从打开状态转变为半开状态等待的时间
+        wait-duration-in-open-state: 30000
+        # 在单位时间窗口内调用失败率达到10%后会启动断路器
+        failure-rate-threshold: 10
+        event-consumer-buffer-size: 10
+        register-health-indicator: true
+        # 允许断路器自动由打开状态转换为半开状态
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+    instances:
+      redisBreaker:
+        base-config: default

@@ -1,0 +1,132 @@
+server:
+  port: 16604
+  servlet:
+    context-path: /monitor
+  undertow:
+    buffer-size: 1024
+    threads:
+      io: 8
+      worker: 64
+    direct-buffers: true
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    dynamic:
+      primary: ms
+      strict: true
+      datasource:
+        ms:
+          url: jdbc:mysql://172.16.56.13:3300/private_number_ms?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          username: private_number
+          password: LiDPJKPL4F12bmmDQQVMUKl4Lymw8w86qr0RrCxBabb7MAqT7w8BBLb4offjT4fXN3mJlcdP/ocm7Lr+MXKnVA==
+          type: com.linkcircle.ss.LHikariDataSource
+        stats:
+          url: jdbc:mysql://172.16.48.40:3300/private_stats?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+          username: private_number
+          password: Zj1Dc4Dy9AhZO7HVqgbBCVl5nSiQzVwogmB/Up/jhBVs99Rm0leYVPzBS94M7LsJzbMV2DD1RrBb1BvU3fa56Q==
+          type: com.linkcircle.ss.LHikariDataSource
+      hikari:
+        min-idle: 30
+        max-pool-size: 30
+        idle-timeout: 60000
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+  redis:
+    password: Cqt@redis2021
+    masterConnectionPoolSize: 200
+    cluster:
+      nodes:
+        - 172.16.72.130:9100
+        - 172.16.72.131:9100
+        - 172.16.72.132:9100
+        - 172.16.72.133:9100
+        - 172.16.72.134:9100
+        - 172.16.72.135:9100
+        - 172.16.72.136:9100
+        - 172.16.72.137:9100
+        - 172.16.72.138:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: nj
+    cluster2:
+      # 激活异地机房
+      active: true
+      nodes:
+        - 172.16.68.130:9100
+        - 172.16.68.131:9100
+        - 172.16.68.132:9100
+        - 172.16.68.133:9100
+        - 172.16.68.134:9100
+        - 172.16.68.135:9100
+        - 172.16.68.136:9100
+        - 172.16.68.137:9100
+        - 172.16.68.138:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: yz
+    timeout: 10000
+    database: 0
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        max-wait: -1
+
+  rabbitmq:
+    publisher-returns: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 30
+        concurrency: 10
+        max-concurrency: 20
+        retry:
+          enabled: true
+          max-attempts: 3
+      type: simple
+    username: fsbc
+    password: fsbc_0591_...
+    addresses: 172.16.55.62:5672
+    template:
+      #是否接收return消息的配置，true为接受confirm消息，默认为false
+      mandatory: true
+    virtual-host: fsbc
+    publisher-confirm-type: none
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com.alibaba.nacos: error
+
+xxljob:
+  accessToken:
+  adminAddresses: http://172.16.72.210:9068/xxl-job-admin/
+  logRetentionDays: 30
+  logPath: /home/smp/xxl-job/${spring.application.name}
+  address:
+  ip:
+  port: 16614
+  appName: ${spring.application.name}
+  title: 通用隐私号-监控服务
+  userName: admin
+  password: cqt!010@Xxljob
+
+monitor:
+  openMonitor: true     # 是否开启监控
+  msrnNum: 10            # 漫游号错误次数达到时切换
+  autoRecover: true     # 是否自动恢复
+  timeout: 3000          # mq接口超时时间ms
+  mqCheckType: 1      # 1 Java代码, 0 15672接口
+  retryNum: 3          # 请求切换、恢复接口重试次数
+  switchMaster: ps -ef | grep CTD_MAP_master| grep -v grep | awk '{print $2}'
+  switchSlave: ps -ef | grep CTD_MAP_slave| grep -v grep | awk '{print $2}'
+
+platForm:
+  formValue: nj

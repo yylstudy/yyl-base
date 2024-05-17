@@ -1,0 +1,11 @@
+{
+  "versions": [
+    {
+      "version": "1.0.0",
+      "date": "2023-01-16",
+      "msg": "项目初始化"
+    }
+  ],
+  "artifactId": "【青海移动-阿里-查询绑定服务 private-number-qinghai-ali-hmyc】",
+  "inherit": true
+}

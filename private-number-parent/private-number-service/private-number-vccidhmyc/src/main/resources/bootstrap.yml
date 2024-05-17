@@ -1,0 +1,46 @@
+NACOS_SERVER: @server-addr@
+NACOS_USERNAME: @username@
+NACOS_PASSWORD: @password@
+NACOS_NAMESPACE: @namespace@
+NACOS_GROUP: @group@
+spring:
+  application:
+    name: @project.artifactId@
+  cloud:
+    nacos:
+      server-addr: ${NACOS_SERVER}
+      username: ${NACOS_USERNAME}
+      password: ${NACOS_PASSWORD}
+      config:
+        file-extension: yaml
+        namespace: ${NACOS_NAMESPACE}
+        group: ${NACOS_GROUP}
+      discovery:
+        namespace: ${NACOS_NAMESPACE}
+        group: ${NACOS_GROUP}
+        # 观察延迟，持续时间从nacos服务器中提取新服务
+        watch-delay: 3000
+        # 设置心跳的周期，单位为毫秒
+        heart-beat-interval: 1000
+        # 设置心跳超时时间，单位为毫秒；服务端xxx秒收不到客户端心跳，会将该客户端注册的实例设为不健康
+        heart-beat-timeout: 5000
+        # 设置实例删除的超时时间，单位为毫秒；即服务端xxx秒收不到客户端心跳，会将该客户端注册的实例删除
+        ip-delete-timeout: 10000
+  main:
+    allow-bean-definition-overriding: true
+
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  endpoint:
+    shutdown:
+      enabled: true
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  endpoints:
+    web:
+      exposure:
+        include: health,shutdown,metrics,prometheus

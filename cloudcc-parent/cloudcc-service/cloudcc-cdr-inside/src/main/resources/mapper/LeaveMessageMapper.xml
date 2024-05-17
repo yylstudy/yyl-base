@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cqt.cdr.mapper.LeaveMessageMapper">
+
+    <resultMap id="BaseResultMap" type="com.cqt.model.cdr.entity.LeaveMessage">
+            <id property="callId" column="call_id" jdbcType="VARCHAR"/>
+            <result property="uuid" column="uuid" jdbcType="VARCHAR"/>
+            <result property="clientUuid" column="client_uuid" jdbcType="VARCHAR"/>
+            <result property="companyCode" column="company_code" jdbcType="VARCHAR"/>
+            <result property="agentId" column="agent_id" jdbcType="VARCHAR"/>
+            <result property="extId" column="ext_id" jdbcType="VARCHAR"/>
+            <result property="skillId" column="skill_id" jdbcType="VARCHAR"/>
+            <result property="callerNumber" column="caller_number" jdbcType="VARCHAR"/>
+            <result property="displayNumber" column="display_number" jdbcType="VARCHAR"/>
+            <result property="calleeNumber" column="callee_number" jdbcType="VARCHAR"/>
+            <result property="platformNumber" column="platform_number" jdbcType="VARCHAR"/>
+            <result property="chargeNumber" column="charge_number" jdbcType="VARCHAR"/>
+            <result property="callerAreaCode" column="caller_area_code" jdbcType="VARCHAR"/>
+            <result property="calleeAreaCode" column="callee_area_code" jdbcType="VARCHAR"/>
+            <result property="outLine" column="out_line" jdbcType="TINYINT"/>
+            <result property="voiceMailFlag" column="voice_mail_flag" jdbcType="TINYINT"/>
+            <result property="satisfactionFlag" column="satisfaction_flag" jdbcType="TINYINT"/>
+            <result property="callinIvrFlag" column="callin_ivr_flag" jdbcType="TINYINT"/>
+            <result property="transIvrFlag" column="trans_ivr_flag" jdbcType="TINYINT"/>
+            <result property="direction" column="direction" jdbcType="TINYINT"/>
+            <result property="callinTime" column="callin_time" jdbcType="TIMESTAMP"/>
+            <result property="inviteTime" column="invite_time" jdbcType="TIMESTAMP"/>
+            <result property="ringTime" column="ring_time" jdbcType="TIMESTAMP"/>
+            <result property="answerTime" column="answer_time" jdbcType="TIMESTAMP"/>
+            <result property="bridgeTime" column="bridge_time" jdbcType="TIMESTAMP"/>
+            <result property="hangupTime" column="hangup_time" jdbcType="TIMESTAMP"/>
+            <result property="callStartTime" column="call_start_time" jdbcType="TIMESTAMP"/>
+            <result property="callEndTime" column="call_end_time" jdbcType="TIMESTAMP"/>
+            <result property="startQueueTime" column="start_queue_time" jdbcType="TIMESTAMP"/>
+            <result property="endQueueTime" column="end_queue_time" jdbcType="TIMESTAMP"/>
+            <result property="startIvrTime" column="start_ivr_time" jdbcType="TIMESTAMP"/>
+            <result property="endIvrTime" column="end_ivr_time" jdbcType="TIMESTAMP"/>
+            <result property="startSatisfactionTime" column="start_satisfaction_time" jdbcType="TIMESTAMP"/>
+            <result property="voiceMailStartTime" column="voice_mail_start_time" jdbcType="TIMESTAMP"/>
+            <result property="voiceMailEndTime" column="voice_mail_end_time" jdbcType="TIMESTAMP"/>
+            <result property="callinStamp" column="callin_stamp" jdbcType="BIGINT"/>
+            <result property="inviteStamp" column="invite_stamp" jdbcType="BIGINT"/>
+            <result property="ringStamp" column="ring_stamp" jdbcType="BIGINT"/>
+            <result property="answerStamp" column="answer_stamp" jdbcType="BIGINT"/>
+            <result property="bridgeStamp" column="bridge_stamp" jdbcType="BIGINT"/>
+            <result property="hangupStamp" column="hangup_stamp" jdbcType="BIGINT"/>
+            <result property="answerSecond" column="answer_second" jdbcType="BIGINT"/>
+            <result property="callStartStamp" column="call_start_stamp" jdbcType="BIGINT"/>
+            <result property="callEndStamp" column="call_end_stamp" jdbcType="BIGINT"/>
+            <result property="duration" column="duration" jdbcType="BIGINT"/>
+            <result property="releaseDir" column="release_dir" jdbcType="TINYINT"/>
+            <result property="releaseCode" column="release_code" jdbcType="TINYINT"/>
+            <result property="releaseDesc" column="release_desc" jdbcType="VARCHAR"/>
+            <result property="hangupCause" column="hangup_cause" jdbcType="VARCHAR"/>
+            <result property="serviceId" column="service_id" jdbcType="VARCHAR"/>
+            <result property="mediaType" column="media_type" jdbcType="TINYINT"/>
+            <result property="audio" column="audio" jdbcType="TINYINT"/>
+            <result property="video" column="video" jdbcType="TINYINT"/>
+            <result property="recordUrl" column="record_url" jdbcType="VARCHAR"/>
+            <result property="callbackStatus" column="callback_status" jdbcType="TINYINT"/>
+            <result property="callbackAgent" column="callback_agent" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        call_id,uuid,client_uuid,
+        company_code,agent_id,ext_id,
+        skill_id,caller_number,display_number,
+        callee_number,platform_number,charge_number,
+        caller_area_code,callee_area_code,out_line,
+        voice_mail_flag,satisfaction_flag,callin_ivr_flag,
+        trans_ivr_flag,direction,callin_time,
+        invite_time,ring_time,answer_time,
+        bridge_time,hangup_time,call_start_time,
+        call_end_time,start_queue_time,end_queue_time,
+        start_ivr_time,end_ivr_time,start_satisfaction_time,
+        voice_mail_start_time,voice_mail_end_time,callin_stamp,
+        invite_stamp,ring_stamp,answer_stamp,
+        bridge_stamp,hangup_stamp,answer_second,
+        call_start_stamp,call_end_stamp,duration,
+        release_dir,release_code,release_desc,
+        hangup_cause,service_id,media_type,
+        audio,video,record_url,
+        callback_status,callback_agent
+    </sql>
+</mapper>

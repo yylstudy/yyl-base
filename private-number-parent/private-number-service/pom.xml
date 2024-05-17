@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>private-number-parent</artifactId>
+        <groupId>com.cqt</groupId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+
+    <artifactId>private-number-service</artifactId>
+    <description>微服务父工程</description>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+    <modules>
+        <module>private-number-hmyc</module>
+        <module>private-number-gateway</module>
+        <module>private-number-hmyc-third</module>
+        <module>private-number-push</module>
+        <module>private-number-hmbc</module>
+        <module>private-number-sms</module>
+        <module>private-number-iccpsmspush</module>
+        <module>private-number-recycle</module>
+        <module>private-number-monitor</module>
+        <module>private-number-test</module>
+        <module>private-number-agent</module>
+        <module>private-number-third-unicom</module>
+        <module>private-number-hmyc-third-chinanet</module>
+        <module>private-number-qinghai-ali</module>
+        <module>private-number-hmyc-third-broadnet</module>
+        <module>private-number-wechat-push</module>
+        <module>private-number-vccidhmyc</module>
+        <module>private-number-china-unicom</module>
+    </modules>
+
+    <dependencies>
+
+    </dependencies>
+</project>

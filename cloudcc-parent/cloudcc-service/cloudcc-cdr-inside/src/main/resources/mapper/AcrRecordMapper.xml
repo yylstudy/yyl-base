@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cqt.cdr.mapper.AcrRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.cqt.cdr.entity.AcrRecord">
+            <id property="streamnumber" column="streamnumber" jdbcType="VARCHAR"/>
+            <result property="servicekey" column="servicekey" jdbcType="INTEGER"/>
+            <result property="callcost" column="callcost" jdbcType="INTEGER"/>
+            <result property="calledpartynumber" column="calledpartynumber" jdbcType="VARCHAR"/>
+            <result property="callingpartynumber" column="callingpartynumber" jdbcType="VARCHAR"/>
+            <result property="chargemode" column="chargemode" jdbcType="SMALLINT"/>
+            <result property="specificchargedpar" column="specificchargedpar" jdbcType="VARCHAR"/>
+            <result property="translatednumber" column="translatednumber" jdbcType="VARCHAR"/>
+            <result property="startdateandtime" column="startdateandtime" jdbcType="VARCHAR"/>
+            <result property="stopdateandtime" column="stopdateandtime" jdbcType="VARCHAR"/>
+            <result property="duration" column="duration" jdbcType="INTEGER"/>
+            <result property="chargeclass" column="chargeclass" jdbcType="INTEGER"/>
+            <result property="transparentparamet" column="transparentparamet" jdbcType="VARCHAR"/>
+            <result property="calltype" column="calltype" jdbcType="INTEGER"/>
+            <result property="callersubgroup" column="callersubgroup" jdbcType="VARCHAR"/>
+            <result property="calleesubgroup" column="calleesubgroup" jdbcType="VARCHAR"/>
+            <result property="acrcallid" column="acrcallid" jdbcType="VARCHAR"/>
+            <result property="oricallednumber" column="oricallednumber" jdbcType="VARCHAR"/>
+            <result property="oricallingnumber" column="oricallingnumber" jdbcType="VARCHAR"/>
+            <result property="callerpnp" column="callerpnp" jdbcType="VARCHAR"/>
+            <result property="calleepnp" column="calleepnp" jdbcType="VARCHAR"/>
+            <result property="reroute" column="reroute" jdbcType="INTEGER"/>
+            <result property="groupnumber" column="groupnumber" jdbcType="VARCHAR"/>
+            <result property="callcategory" column="callcategory" jdbcType="INTEGER"/>
+            <result property="chargetype" column="chargetype" jdbcType="INTEGER"/>
+            <result property="userpin" column="userpin" jdbcType="VARCHAR"/>
+            <result property="acrtype" column="acrtype" jdbcType="INTEGER"/>
+            <result property="videocallflag" column="videocallflag" jdbcType="INTEGER"/>
+            <result property="serviceid" column="serviceid" jdbcType="VARCHAR"/>
+            <result property="forwardnumber" column="forwardnumber" jdbcType="VARCHAR"/>
+            <result property="extforwardnumber" column="extforwardnumber" jdbcType="VARCHAR"/>
+            <result property="srfmsgid" column="srfmsgid" jdbcType="VARCHAR"/>
+            <result property="msserver" column="msserver" jdbcType="VARCHAR"/>
+            <result property="begintime" column="begintime" jdbcType="VARCHAR"/>
+            <result property="releasecause" column="releasecause" jdbcType="INTEGER"/>
+            <result property="releasereason" column="releasereason" jdbcType="VARCHAR"/>
+            <result property="areanumber" column="areanumber" jdbcType="VARCHAR"/>
+            <result property="calledareacode" column="calledareacode" jdbcType="VARCHAR"/>
+            <result property="localorlong" column="localorlong" jdbcType="VARCHAR"/>
+            <result property="id" column="id" jdbcType="INTEGER"/>
+            <result property="dtmfkey" column="dtmfkey" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        streamnumber,servicekey,callcost,
+        calledpartynumber,callingpartynumber,chargemode,
+        specificchargedpar,translatednumber,startdateandtime,
+        stopdateandtime,duration,chargeclass,
+        transparentparamet,calltype,callersubgroup,
+        calleesubgroup,acrcallid,oricallednumber,
+        oricallingnumber,callerpnp,calleepnp,
+        reroute,groupnumber,callcategory,
+        chargetype,userpin,acrtype,
+        videocallflag,serviceid,forwardnumber,
+        extforwardnumber,srfmsgid,msserver,
+        begintime,releasecause,releasereason,
+        areanumber,calledareacode,localorlong,
+        id,dtmfkey
+    </sql>
+</mapper>

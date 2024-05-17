@@ -1,0 +1,76 @@
+server:
+  port: 5007
+  servlet:
+    context-path: /cloudcc-sf-aftersales
+dubbo:
+  protocol:
+    port: 15007
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+cloudcc:
+  base:
+    base-url: http://172.16.251.206:15678/api/
+    system-url: http://172.16.250.217:7001/sys/
+    event-topic: cloudcc
+    service-code: cloudcc
+
+  configuration:
+    #设置随路参数key的失效时间
+    uuid-expire-time: 72
+
+rocketmq:
+  name-server: 172.16.250.214:9876
+  pull-consume.group: my-group1
+  pull-consumer.topic: test
+  consumer:
+    group: ccloud_cc_group
+    # 一次拉取消息最大值，注意是拉取消息的最大值而非消费最大值
+    pull-batch-size: 100
+  producer:
+    # 发送同一类消息的设置为同一个group，保证唯一
+    group: ccloud_cc_group
+    # 发送消息超时时间，默认3000
+    send-message-timeout: 3000
+    # 发送消息失败重试次数，默认2
+    retry-times-when-send-failed: 2
+    # 异步消息重试此处，默认2
+    retry-times-when-send-async-failed: 2
+    # 消息最大长度，默认1024 * 1024 * 4(默认4M)
+    max-message-size: 4194304
+    # 压缩消息阈值，默认4k(1024 * 4)
+    compress-message-body-threshold: 4096
+    # 是否在内部发送失败时重试另一个broker，默认false
+    retry-next-server: true
+
+pzinfo:
+  # 循序次数
+  quality-company: 090008,090007,090014 
+  # 睡眠时间 毫秒
+  sleep: 1000
+  push-num: 3
+  sfkeysfdiscern: 1111
+  xfsfstatu-key: E532ADC266440127B76DA10129CD6386
+
+cdrinfo:
+  # 质检全推企业
+  quality-all-push: 090008,090007
+
+dynamic:
+  table-rule:
+    # 逻辑表名(不带后缀) : 真实表名模板
+    cloudcc_main_cdr: cloudcc_main_cdr_{company_code}_{month}
+    cloudcc_cdr_channeldata: cloudcc_cdr_channeldata_{company_code}_{month}
+    cloudcc_sub_cdr: cloudcc_sub_cdr_{company_code}_{month}
+    acr_record: acr_record_{company_code}_{month}
+    cc_push_err: cc_push_err_{month}
+
+test:  
+  quality-company:  
+    - 090008  
+    - 090007  
+    - 090014

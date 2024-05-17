@@ -1,0 +1,193 @@
+server:
+  port: 5000
+  servlet:
+    context-path: /cloudcc-call-control
+dubbo:
+  application:
+    name: ${spring.application.name}
+    # 设置优雅停机超时时间，缺省超时时间是 10 秒，如果超时则强制关闭。
+    shutwait: 10000
+    qos-enable: false
+    enable-empty-protection: false
+    register-mode: instance
+  # 多注册中心
+  registries:
+    # A机房注册中心
+    registry-a:
+      protocol: nacos
+      address: nacos://${NACOS_SERVER}
+      username: ${NACOS_USERNAME}
+      password: ${NACOS_PASSWORD}
+      group: ${NACOS_GROUP}
+      parameters:
+        namespace: ${NACOS_NAMESPACE}
+        # 消费者注册到nacos注册中心
+        register-consumer-url: true
+      use-as-config-center: false
+      use-as-metadata-center: false
+      preferred: true
+      # 设置全局默认注册中心
+      default: true
+      enable-empty-protection: true
+    # B机房注册中心
+    registry-b:
+      protocol: nacos
+      address: nacos://${BACK_NACOS_SERVER}
+      username: ${NACOS_USERNAME}
+      password: ${NACOS_PASSWORD}
+      group: ${NACOS_GROUP}
+      parameters:
+        namespace: ${NACOS_NAMESPACE}
+        # 消费者注册到nacos注册中心
+        register-consumer-url: true
+      use-as-config-center: false
+      use-as-metadata-center: false
+      enable-empty-protection: true
+      default: false
+      register: false
+  metadata-report:
+    protocol: nacos
+    address: nacos://${NACOS_SERVER}
+    username: ${NACOS_USERNAME}
+    password: ${NACOS_PASSWORD}
+    group: ${NACOS_GROUP}
+    parameters:
+      namespace: ${NACOS_NAMESPACE}-metadata
+  protocol:
+    name: dubbo
+    port: 15000
+  provider:
+    # 服务需要预热时间，比如初始化缓存，等待相关资源就位等，延迟暴露。如果你不需要延迟暴露服务，无需配置 delay
+    delay: 1000
+    timeout: 10000
+  consumer:
+    # 延迟连接用于减少长连接数。当有调用发起时，再创建长连接。
+    lazy: false
+    # 不检查生产者服务是否可用
+    check: false
+    # 失败重试次数
+    retries: 0
+    # 消费者请求生产者接口超时时间ms
+    timeout: 10000
+
+rocketmq:
+  name-server: 172.16.250.214:9876
+  consumer:
+    group: ccloud_cc_group
+    # 一次拉取消息最大值，注意是拉取消息的最大值而非消费最大值
+    pull-batch-size: 100
+    access-key: cqtcqtcqt
+    secret-key: cqt!010@Rocketmq
+  producer:
+    # 发送同一类消息的设置为同一个group，保证唯一
+    group: ccloud_cc_group
+    # 发送消息超时时间，默认3000
+    send-message-timeout: 3000
+    # 发送消息失败重试次数，默认2
+    retry-times-when-send-failed: 2
+    # 异步消息重试此处，默认2
+    retry-times-when-send-async-failed: 2
+    # 消息最大长度，默认1024 * 1024 * 4(默认4M)
+    max-message-size: 4194304
+    # 压缩消息阈值，默认4k(1024 * 4)
+    compress-message-body-threshold: 4096
+    # 是否在内部发送失败时重试另一个broker，默认false
+    retry-next-server: true
+    access-key: cqtcqtcqt
+    secret-key: cqt!010@Rocketmq
+
+dynamic:
+  table-rule:
+    cc_ext_status_log: cc_ext_status_log_{company_code}_{month}
+
+spring:
+  # jackson:
+  #   default-property-inclusion: non_null
+  datasource:
+    dynamic:
+      primary: ms
+      strict: true
+      datasource:
+        cdr:
+          url: jdbc:mysql://172.16.250.234:3300/cloudcc_cdr?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
+          username: root
+          password: cqt@fj889977
+          type: com.zaxxer.hikari.HikariDataSource
+        ms:
+          url: jdbc:mysql://172.16.250.234:3300/jeecg-boot5?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
+          username: root
+          password: cqt@fj889977
+          type: com.zaxxer.hikari.HikariDataSource
+      hikari:
+        min-idle: 10
+        max-pool-size: 100
+        idle-timeout: 60000
+        max-lifetime: 600000
+        connection-timeout: 3000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+  redis:
+    password: C@hjzx531sider
+    masterConnectionPoolSize: 200
+    cluster:
+      nodes:
+        - 172.16.250.215:9100
+        - 172.16.250.215:9101
+        - 172.16.250.215:9102
+        - 172.16.250.216:9103
+        - 172.16.250.216:9104
+        - 172.16.250.216:9105
+        - 172.16.250.213:9106
+        - 172.16.250.213:9107
+        - 172.16.250.213:9108
+      max-redirects: 5
+      location: A
+    cluster2:
+      # 激活异地机房
+      active: true
+      nodes:
+        - 172.16.251.225:9100
+        - 172.16.251.225:9101
+        - 172.16.251.225:9102
+        - 172.16.251.226:9103
+        - 172.16.251.226:9104
+        - 172.16.251.226:9105
+        - 172.16.251.223:9106
+        - 172.16.251.223:9107
+        - 172.16.251.223:9108
+      max-redirects: 5
+      location: B
+    timeout: 10000
+    database: 0
+    lettuce:
+      pool:
+        maxIdle: 8
+        minIdle: 0
+        maxActive: 8
+        timeBetweenEvictionRuns: 600s
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+feign:
+  httpclient:
+    connection-timeout: 10000
+    connection-timer-repeat: 10000
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 10000
+        loggerLevel: basic
+    refresh-enabled: true
+cloudcc:
+  base:
+    base-url: http://172.16.251.206/basecomapi/
+    event-topic: cloudcc
+    event-tag: '*'
+    service-code: cloudcc
+logging:
+  level:
+    com.cqt.call.strategy.event.impl.ExtStatusEventStrategyImpl: error

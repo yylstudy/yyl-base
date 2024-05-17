@@ -1,0 +1,67 @@
+dubbo:
+  application:
+    name: ${spring.application.name}
+    # 设置优雅停机超时时间，缺省超时时间是 10 秒，如果超时则强制关闭。
+    shutwait: 10000
+    qos-enable: false
+    enable-empty-protection: false
+    register-mode: instance
+  # 多注册中心
+  registries:
+    # A机房注册中心
+    registry-a:
+      protocol: nacos
+      address: nacos://${NACOS_SERVER}
+      username: ${NACOS_USERNAME}
+      password: ${NACOS_PASSWORD}
+      group: ${NACOS_GROUP}
+      parameters:
+        namespace: ${NACOS_NAMESPACE}
+        # 消费者注册到nacos注册中心
+        register-consumer-url: true
+      use-as-config-center: false
+      use-as-metadata-center: false
+      preferred: true
+      # 设置全局默认注册中心
+      default: true
+      enable-empty-protection: true
+    # B机房注册中心
+    registry-b:
+      protocol: nacos
+      address: nacos://${BACK_NACOS_SERVER}
+      username: ${NACOS_USERNAME}
+      password: ${NACOS_PASSWORD}
+      group: ${NACOS_GROUP}
+      parameters:
+        namespace: ${NACOS_NAMESPACE}
+        # 消费者注册到nacos注册中心
+        register-consumer-url: true
+      use-as-config-center: false
+      use-as-metadata-center: false
+      enable-empty-protection: true
+      default: false
+      register: false
+  metadata-report:
+    protocol: nacos
+    address: nacos://${NACOS_SERVER}
+    username: ${NACOS_USERNAME}
+    password: ${NACOS_PASSWORD}
+    group: ${NACOS_GROUP}
+    parameters:
+      namespace: ${NACOS_NAMESPACE}-metadata
+  protocol:
+    name: dubbo
+    port: 15000
+  provider:
+    # 服务需要预热时间，比如初始化缓存，等待相关资源就位等，延迟暴露。如果你不需要延迟暴露服务，无需配置 delay
+    delay: 1000
+    timeout: 10000
+  consumer:
+    # 延迟连接用于减少长连接数。当有调用发起时，再创建长连接。
+    lazy: false
+    # 不检查生产者服务是否可用
+    check: false
+    # 失败重试次数
+    retries: 0
+    # 消费者请求生产者接口超时时间ms
+    timeout: 10000

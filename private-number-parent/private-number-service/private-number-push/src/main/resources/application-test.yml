@@ -1,0 +1,27 @@
+server:
+  port: 17613
+  servlet:
+    context-path: /private-push
+
+spring:
+  application:
+    name: meituan-push
+  rabbitmq:
+    publisher-returns: false
+    listener:
+      direct:
+        acknowledge-mode: manual
+        prefetch: 10
+        consumers-per-queue: 3
+      simple:
+        acknowledge-mode: manual
+        prefetch: 10
+        concurrency: 3
+    username: admin
+    password: cqt@1234
+    addresses: 172.16.251.9:5672,172.16.251.10:5672
+    template:
+      #是否接收return消息的配置，true为接受confirm消息，默认为false
+      mandatory: true
+    virtual-host: meituan
+    publisher-confirm-type: simple

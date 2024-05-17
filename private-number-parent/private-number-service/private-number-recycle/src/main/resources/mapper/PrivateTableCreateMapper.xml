@@ -1,0 +1,725 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cqt.recycle.web.numpool.mapper.PrivateTableCreateMapper">
+    <select id="createBindAxb">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_axb_${vccId}`
+        (
+            `bind_id`               varchar(128) NOT NULL COMMENT '绑定关系ID ',
+            `request_id`            varchar(128) NOT NULL COMMENT '请求ID',
+            `supplier_id`           varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `vcc_id`                varchar(8)   NOT NULL COMMENT '企业id',
+            `tel_a`                 varchar(32)  NOT NULL COMMENT '号码A, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_b`                 varchar(32)  NOT NULL COMMENT '号码B, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_x`                 varchar(32)  NOT NULL COMMENT '虚拟号码',
+            `area_code`             varchar(8)   NOT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `city_code`             varchar(8)   NOT NULL COMMENT '地市编码 通area_code, wholearea=1时 为0000',
+            `whole_area`            tinyint(2)   NOT NULL COMMENT '使用全国池, 1 是, 其他0 否',
+            `expiration`            bigint(15)   NOT NULL COMMENT '有效持续时间，过expiration秒后自动解绑。数值字符串',
+            `type`                  tinyint(2)   NOT NULL COMMENT '0：正常(可不传，系统默认0) 1：禁用短信',
+            `record_file_format`    varchar(8)   NOT NULL COMMENT '指示呼叫转接的录音格式，仅下列值有效。默认是 wav。\n mp3\n wav',
+            `model`                 tinyint(2)   NOT NULL COMMENT '在被叫上显示来话的真实号码。\n2：显示X号码(默认值)\n3：显示真实号码',
+            `record_mode`           tinyint(2)   NOT NULL COMMENT '录音方式。 0：混音，即通话双方的声音混合在一个声道中。
+                1：双声道，即通话双方的声音分别录制在左、右两个声道中。如果不携带该参数，参数值默认为0。',
+            `dual_record_mode`      tinyint(2)   NOT NULL COMMENT
+                '双声道录音模式，取值范围如下：0：主叫录音到左声道，被叫录音到右声道。1：被叫录音到左声道，主叫录音到右声道。录音模式为双声道时有效，而且是必选默认主叫录音到左声道，被叫录音到右声道',
+            `ayb_other_show`        varchar(2)   DEFAULT NULL COMMENT '被叫显示号码\r\n * tel回呼Y时被叫看到的来电号码\r\n * 1：看见Y\r\n *
+                2：看见tel_x',
+            `axeyb_tel_x`           varchar(32)  DEFAULT NULL COMMENT 'axe的X号码',
+            `audio_a_call_x`        varchar(128) DEFAULT NULL COMMENT 'A拨打X放音文件编码',
+            `audio_b_call_x`        varchar(128) DEFAULT NULL COMMENT 'B拨打X放音文件编码',
+            `audio_other_call_x`    varchar(128) DEFAULT NULL COMMENT '非A、B的其它号码拨打X放音文件编码',
+            `audio_a_called_x`      varchar(128) DEFAULT NULL COMMENT 'A 为被叫时 给A播放语音文件编码',
+            `audio_b_called_x`      varchar(128) DEFAULT NULL COMMENT 'B 为被叫时 给B播放语音文件编码',
+            `audio_a_call_x_before` varchar(128) DEFAULT NULL COMMENT 'A打给B，接通前A号码拨打X放音文件',
+            `audio_b_call_x_before` varchar(128) DEFAULT NULL COMMENT 'B打给A，接通前B号码拨打X放音文件',
+            `last_min_voice`        varchar(128) DEFAULT NULL COMMENT '通话最后一分钟放音',
+            `enable_record`         tinyint(2)   DEFAULT NULL COMMENT '当前绑定关系是否需要录音 0：不需要 1：需要（数值字符串）',
+            `user_data`             varchar(512) DEFAULT NULL COMMENT '业务侧信息透传字段。所有当前bind_id产生的通话在话单回推时需要将该字段带回',
+            `create_time`           datetime     DEFAULT NULL COMMENT '创建时间',
+            `update_time`           datetime     DEFAULT NULL COMMENT '修改时间',
+            `expire_time`           datetime     DEFAULT NULL COMMENT '过期时间',
+            `max_duration`          int(1)       NOT NULL COMMENT '最大通话时长',
+            `source_bind_id`        varchar(128) DEFAULT NULL COMMENT 'axe关联绑定id',
+            `source_request_id`     varchar(128) DEFAULT NULL COMMENT 'axe关联请求id',
+            `source_bind_time`      datetime     DEFAULT NULL COMMENT 'axe关联绑定时间',
+            `source_area_code`      varchar(8)   DEFAULT NULL COMMENT 'axe关联地市编码',
+            `source_ext_num`        varchar(8)   DEFAULT NULL COMMENT 'axe关联分机号',
+            `appkey`                varchar(8)   DEFAULT NULL,
+            `ts`                    varchar(16)  DEFAULT NULL,
+            `sign`                  varchar(128) DEFAULT NULL,
+            `create_by`             varchar(32)  DEFAULT NULL COMMENT '创建人',
+            `update_by`             varchar(32)  DEFAULT NULL COMMENT '更新人',
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_request_id` (`request_id`) USING BTREE,
+            KEY `idx_expire_time` (`expire_time`) USING BTREE,
+            KEY `idx_area_code` (`area_code`) USING BTREE,
+            KEY `idx_tel_x_tel_a` (`tel_x`, `tel_a`) USING BTREE,
+            KEY `idx_tel_x_tel_b` (`tel_x`, `tel_b`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='隐私号AXB绑定关系${vccId}';
+    </select>
+
+
+    <select id="createBindAxbInit">
+        CREATE TABLE IF NOT EXISTS `private_bind_axb_init_user_tel_pool_${vccId}`
+        (
+            `id`          varchar(128) NOT NULL COMMENT '主键 vcc_id:area_code:tel',
+            `area_code`   varchar(8)   NOT NULL COMMENT '地市编码',
+            `tel`         varchar(32)  NOT NULL COMMENT '用户号码 tel_a/tel_b',
+            `vcc_id`      varchar(8)   NOT NULL COMMENT '企业id',
+            `create_time` datetime   DEFAULT NULL COMMENT '初始化时间',
+            `update_time` datetime   DEFAULT NULL COMMENT '更新时间',
+            `init_flag`   tinyint(2)   NOT NULL COMMENT '初始化标志 1 初始化主池, 2 使用了备池',
+            `version`     tinyint(2) DEFAULT NULL COMMENT '版本号',
+            PRIMARY KEY (`id`) USING BTREE,
+            KEY `idx_tel` (`tel`) USING BTREE,
+            KEY `idx_area_code_create_time` (`area_code`, `create_time`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='隐私号AXB AB用户可用号码池初始化记录${vccId}';
+    </select>
+
+    <select id="createBindAxyb">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_axyb_${vccId}`
+        (
+            `bind_id`               varchar(128) NOT NULL COMMENT '绑定关系ID ',
+            `request_id`            varchar(128) NOT NULL COMMENT '请求ID',
+            `supplier_id`           varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `vcc_id`                varchar(8)   NOT NULL COMMENT '企业id',
+            `tel_a`                 varchar(32)  NOT NULL COMMENT '号码A, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_b`                 varchar(32)  NOT NULL COMMENT '号码B, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_x`                 varchar(32)  NOT NULL COMMENT '虚拟号码X',
+            `tel_y`                 varchar(32)  NOT NULL COMMENT '虚拟号码Y',
+            `area_code`             varchar(8)   NOT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `city_code`             varchar(8)   NOT NULL COMMENT '地市编码 通area_code, wholearea=1时 为0000',
+            `whole_area`            tinyint(2)   NOT NULL COMMENT '使用全国池, 1 是, 其他0 否',
+            `expiration`            bigint(15)   NOT NULL COMMENT '有效持续时间，过expiration秒后自动解绑。数值字符串',
+            `type`                  tinyint(2)   NOT NULL COMMENT '0：正常(可不传，系统默认0) 1：禁用短信',
+            `record_file_format`    varchar(8)   NOT NULL COMMENT '指示呼叫转接的录音格式，仅下列值有效。默认是 wav。\n mp3\n wav',
+            `model`                 tinyint(2)   NOT NULL COMMENT '在被叫上显示来话的真实号码。\n2：显示X号码(默认值)\n3：显示真实号码',
+            `record_mode`           tinyint(2)   NOT NULL COMMENT '录音方式。 0：混音，即通话双方的声音混合在一个声道中。
+                1：双声道，即通话双方的声音分别录制在左、右两个声道中。如果不携带该参数，参数值默认为0。',
+            `dual_record_mode`      tinyint(2)   NOT NULL COMMENT
+                '双声道录音模式，取值范围如下：0：主叫录音到左声道，被叫录音到右声道。1：被叫录音到左声道，主叫录音到右声道。录音模式为双声道时有效，而且是必选默认主叫录音到左声道，被叫录音到右声道',
+            `audio_a_call_x`        varchar(128) DEFAULT NULL COMMENT 'A拨打X放音文件编码',
+            `audio_b_call_x`        varchar(128) DEFAULT NULL COMMENT 'B拨打X放音文件编码',
+            `audio_a_called_x`      varchar(128) DEFAULT NULL COMMENT 'A 为被叫时 给A播放语音文件编码',
+            `audio_b_called_x`      varchar(128) DEFAULT NULL COMMENT 'B 为被叫时 给B播放语音文件编码',
+            `audio_a_call_x_before` varchar(128) DEFAULT NULL COMMENT 'A打给B，接通前A号码拨打X放音文件',
+            `audio_b_call_x_before` varchar(128) DEFAULT NULL COMMENT 'B打给A，接通前B号码拨打X放音文件',
+            `last_min_voice`        varchar(128) DEFAULT NULL COMMENT '通话最后一分钟放音',
+            `enable_record`         tinyint(2)   DEFAULT NULL COMMENT '当前绑定关系是否需要录音 0：不需要 1：需要（数值字符串）',
+            `user_data`             varchar(512) DEFAULT NULL COMMENT '业务侧信息透传字段。所有当前bind_id产生的通话在话单回推时需要将该字段带回',
+            `create_time`           datetime     DEFAULT NULL COMMENT '创建时间',
+            `update_time`           datetime     DEFAULT NULL COMMENT '修改时间',
+            `expire_time`           datetime     DEFAULT NULL COMMENT '过期时间',
+            `max_duration`          int(1)       NOT NULL COMMENT '最大通话时长',
+            `appkey`                varchar(8)   DEFAULT NULL,
+            `ts`                    varchar(16)  DEFAULT NULL,
+            `sign`                  varchar(128) DEFAULT NULL,
+            `create_by`             varchar(32)  DEFAULT NULL COMMENT '创建人',
+            `update_by`             varchar(32)  DEFAULT NULL COMMENT '更新人',
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_request_id` (`request_id`) USING BTREE,
+            KEY `idx_expire_time` (`expire_time`) USING BTREE,
+            KEY `idx_area_code` (`area_code`) USING BTREE,
+            KEY `idx_tel_x_tel_a` (`tel_x`, `tel_a`) USING BTREE,
+            KEY `idx_tel_x_tel_b` (`tel_x`, `tel_b`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='隐私号AXYB绑定关系${vccId}';
+    </select>
+
+    <select id="createBindAxg">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_axg_${vccId}`
+        (
+            `bind_id`               varchar(128) NOT NULL COMMENT '绑定关系ID ',
+            `request_id`            varchar(128) NOT NULL COMMENT '请求ID',
+            `supplier_id`           varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `vcc_id`                varchar(8)   NOT NULL COMMENT '企业id',
+            `tel_a`                 varchar(32)  NOT NULL COMMENT '号码A, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_b`                 varchar(32)  NOT NULL COMMENT '号码B, 多个已逗号隔开',
+            `tel_x`                 varchar(32)  NOT NULL COMMENT '虚拟号码X',
+            `area_code`             varchar(8)   NOT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `city_code`             varchar(8)   NOT NULL COMMENT '地市编码 通area_code, wholearea=1时 为0000',
+            `whole_area`            tinyint(2)   NOT NULL COMMENT '使用全国池, 1 是, 其他0 否',
+            `expiration`            bigint(15)   NOT NULL COMMENT '有效持续时间，过expiration秒后自动解绑。数值字符串',
+            `type`                  tinyint(2)   NOT NULL COMMENT '0：正常(可不传，系统默认0) 1：禁用短信',
+            `record_file_format`    varchar(8)   NOT NULL COMMENT '指示呼叫转接的录音格式，仅下列值有效。默认是 wav。\n mp3\n wav',
+            `model`                 tinyint(2)   NOT NULL COMMENT '在被叫上显示来话的真实号码。\n2：显示X号码(默认值)\n3：显示真实号码',
+            `record_mode`           tinyint(2)   NOT NULL COMMENT '录音方式。 0：混音，即通话双方的声音混合在一个声道中。
+                1：双声道，即通话双方的声音分别录制在左、右两个声道中。如果不携带该参数，参数值默认为0。',
+            `dual_record_mode`      tinyint(2)   NOT NULL COMMENT
+                '双声道录音模式，取值范围如下：0：主叫录音到左声道，被叫录音到右声道。1：被叫录音到左声道，主叫录音到右声道。录音模式为双声道时有效，而且是必选默认主叫录音到左声道，被叫录音到右声道',
+            `audio_a_call_x`        varchar(128) DEFAULT NULL COMMENT 'A拨打X放音文件编码',
+            `audio_b_call_x`        varchar(128) DEFAULT NULL COMMENT 'B拨打X放音文件编码',
+            `audio_a_called_x`      varchar(128) DEFAULT NULL COMMENT 'A 为被叫时 给A播放语音文件编码',
+            `audio_b_called_x`      varchar(128) DEFAULT NULL COMMENT 'B 为被叫时 给B播放语音文件编码',
+            `audio_a_call_x_before` varchar(128) DEFAULT NULL COMMENT 'A打给B，接通前A号码拨打X放音文件',
+            `audio_b_call_x_before` varchar(128) DEFAULT NULL COMMENT 'B打给A，接通前B号码拨打X放音文件',
+            `last_min_voice`        varchar(128) DEFAULT NULL COMMENT '通话最后一分钟放音',
+            `call_mode`             tinyint(2)   DEFAULT NULL COMMENT '呼叫模式 1 顺振, 2 同振',
+            `call_type`             tinyint(2)   DEFAULT NULL COMMENT '呼叫类型 1 联系最近被叫B, 2 联系所有被叫B',
+            `enable_record`         tinyint(2)   DEFAULT NULL COMMENT '当前绑定关系是否需要录音 0：不需要 1：需要（数值字符串）',
+            `user_data`             varchar(512) DEFAULT NULL COMMENT '业务侧信息透传字段。所有当前bind_id产生的通话在话单回推时需要将该字段带回',
+            `create_time`           datetime     DEFAULT NULL COMMENT '创建时间',
+            `update_time`           datetime     DEFAULT NULL COMMENT '修改时间',
+            `expire_time`           datetime     DEFAULT NULL COMMENT '过期时间',
+            `max_duration`          int(1)       NOT NULL COMMENT '最大通话时长',
+            `appkey`                varchar(8)   DEFAULT NULL,
+            `ts`                    varchar(16)  DEFAULT NULL,
+            `sign`                  varchar(128) DEFAULT NULL,
+            `create_by`             varchar(32)  DEFAULT NULL COMMENT '创建人',
+            `update_by`             varchar(32)  DEFAULT NULL COMMENT '更新人',
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_request_id` (`request_id`) USING BTREE,
+            KEY `idx_expire_time` (`expire_time`) USING BTREE,
+            KEY `idx_area_code` (`area_code`) USING BTREE,
+            KEY `idx_tel_x_tel_a` (`tel_x`, `tel_a`) USING BTREE,
+            KEY `idx_tel_x_tel_b` (`tel_x`, `tel_b`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='隐私号AXYB绑定关系${vccId}';
+    </select>
+
+    <select id="createBindAxe">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_axe_${vccId}`
+        (
+            `bind_id`                   varchar(128) NOT NULL COMMENT '绑定关系ID',
+            `request_id`                varchar(128) NOT NULL COMMENT '请求ID',
+            `supplier_id`               varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `vcc_id`                    varchar(8)   NOT NULL COMMENT '企业id',
+            `tel`                       varchar(32)  NOT NULL COMMENT 'X绑定的真实被叫号码 A。可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_x`                     varchar(32)  NOT NULL COMMENT '虚拟号码中总机号',
+            `tel_b`                     varchar(32)  DEFAULT NULL COMMENT '最近联系人B(B打X输入分机号找到A, A打X找到最近联系人B), 默认为空',
+            `tel_x_ext`                 varchar(8)   NOT NULL COMMENT '虚拟号码中分机号',
+            `area_match_mode`           tinyint(1)   NOT NULL COMMENT '地市编码匹配规则(默认2) \r\n当whole_area=1时该字段无效; \r\n1: 地市池不足, 分配全国号码池; \r\n2: 地市池不足, 不分配全国号码池',
+            `area_code`                 varchar(8)   NOT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `city_code`                 varchar(8)   NOT NULL COMMENT '地市编码 通area_code, wholearea=1时 为0000',
+            `whole_area`                tinyint(2)   NOT NULL COMMENT '标识当前绑定请求是否使用全国号池\r\n传1：使用全国号池\r\n不传该字段或传0：不启用全国号池',
+            `callback_flag`             tinyint(1)   DEFAULT NULL COMMENT 'tel是否可以回呼X找到最近联系人(默认0), 回呼有效时间为callback_expiration: 1: 是 0: 否',
+            `callback_expiration`       bigint(15)   DEFAULT NULL COMMENT '回呼AX绑定有效持续时间(秒), 必须小于expiration, 为空默认与expiration相同',
+            `callback_expire_time`      datetime     DEFAULT NULL COMMENT '回呼AX过期时间',
+            `expiration`                bigint(15)   NOT NULL COMMENT '有效持续时间，过expiration秒后自动解绑。数值字符串',
+            `enable_record`             tinyint(2)   NOT NULL COMMENT '当前绑定关系是否需要录音 0：不需要 1：需要（数值字符串）',
+            `user_data`                 varchar(512) DEFAULT NULL COMMENT '业务侧信息透传字段。所有当前bind_id产生的通话在话单回推时需要将该字段带回',
+            `max_duration`              int(1)       NOT NULL COMMENT '最大通话时长',
+            `type`                      tinyint(2)   NOT NULL COMMENT '0：正常(可不传，系统默认0) 1：禁用短信',
+            `record_file_format`        varchar(8)   NOT NULL COMMENT '指示呼叫转接的录音格式，仅下列值有效。默认是 wav。\n mp3\n wav',
+            `model`                     tinyint(2)   NOT NULL COMMENT '在被叫上显示来话的真实号码。\n2：显示X号码(默认值)\n3：显示真实号码',
+            `record_mode`               tinyint(2)   NOT NULL COMMENT '录音方式。 0：混音，即通话双方的声音混合在一个声道中。
+                1：双声道，即通话双方的声音分别录制在左、右两个声道中。如果不携带该参数，参数值默认为0。',
+            `dual_record_mode`          tinyint(2)   NOT NULL COMMENT
+                '双声道录音模式，取值范围如下：0：主叫录音到左声道，被叫录音到右声道。1：被叫录音到左声道，主叫录音到右声道。录音模式为双声道时有效，而且是必选默认主叫录音到左声道，被叫录音到右声道',
+            `audio`                     varchar(128) DEFAULT NULL COMMENT '其它号码拨打X放音文件编码(AX模型B打给A，接通后B播放的语音)',
+            `audio_called`              varchar(128) DEFAULT NULL COMMENT 'AX模型B打给A，接通后A播放的语音',
+            `ayb_flag`                  tinyint(2)   NOT NULL COMMENT '是否生成AYB绑定关系, 1: 是 (默认值); 0: 否',
+            `ayb_expiration`            bigint(15)   DEFAULT NULL COMMENT 'AYB有效持续时间单位秒 ',
+            `ayb_area_code`             varchar(8)   DEFAULT NULL COMMENT '获取Y号码地区；默认=area_code',
+            `ayb_other_show`            tinyint(2)   DEFAULT NULL COMMENT 'tel回呼Y时被叫看到的来电号码 1：看见Y 2：看见tel_x',
+            `ayb_audio_a_call_x`        varchar(128) DEFAULT NULL COMMENT '拨打tel的手机号作为主叫的放音字段（接通后）',
+            `ayb_audio_a_called_x`      varchar(128) DEFAULT NULL COMMENT '拨打tel的手机号作为被叫的放音字段，tel回拨场景（接通后）',
+            `ayb_audio_b_call_x`        varchar(128) DEFAULT NULL COMMENT 'tel为主叫时的放音字段，tel回拨场景（接通后）',
+            `ayb_audio_b_called_x`      varchar(128) DEFAULT NULL COMMENT 'tel作为被叫时的放音字段（接通后）',
+            `ayb_audio_a_call_x_before` varchar(128) DEFAULT NULL COMMENT '不区分模型，A打给B，接通前主叫A听到的提示音',
+            `ayb_audio_b_call_x_before` varchar(128) DEFAULT NULL COMMENT '不区分模型，B打给A，接通前主叫B听到的提示音',
+            `last_min_voice`            varchar(128) DEFAULT NULL COMMENT '通话最后一分钟放音',
+            `create_by`                 varchar(32)  DEFAULT NULL COMMENT '创建人',
+            `update_by`                 varchar(32)  DEFAULT NULL COMMENT '更新人',
+            `create_time`               datetime     DEFAULT NULL COMMENT '创建时间',
+            `update_time`               datetime     DEFAULT NULL COMMENT '修改时间',
+            `expire_time`               datetime     NOT NULL COMMENT '过期时间',
+            `appkey`                    varchar(8)   DEFAULT NULL,
+            `ts`                        varchar(16)  DEFAULT NULL,
+            `sign`                      varchar(128) DEFAULT NULL,
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_request_id` (`request_id`) USING BTREE,
+            KEY `idx_expire_time` (`expire_time`) USING BTREE,
+            KEY `idx_area_code` (`area_code`) USING BTREE,
+            KEY `idx_city_code` (`city_code`) USING BTREE,
+            KEY `idx_tel` (`tel`) USING BTREE,
+            KEY `idx_tel_x_ext` (`tel_x`, `tel_x_ext`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='通用 AXE 分机号绑定关系${vccId}';
+    </select>
+
+    <select id="createBindAxeSharding">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_axe_${vccId}_${index}`
+        (
+            `bind_id`                   varchar(128) NOT NULL COMMENT '绑定关系ID',
+            `request_id`                varchar(128) NOT NULL COMMENT '请求ID',
+            `supplier_id`               varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `vcc_id`                    varchar(8)   NOT NULL COMMENT '企业id',
+            `tel`                       varchar(32)  NOT NULL COMMENT 'X绑定的真实被叫号码 A。可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_x`                     varchar(32)  NOT NULL COMMENT '虚拟号码中总机号',
+            `tel_b`                     varchar(32)  DEFAULT NULL COMMENT '最近联系人B(B打X输入分机号找到A, A打X找到最近联系人B), 默认为空',
+            `tel_x_ext`                 varchar(8)   NOT NULL COMMENT '虚拟号码中分机号',
+            `area_match_mode`           tinyint(1)   NOT NULL COMMENT '地市编码匹配规则(默认2) \r\n当whole_area=1时该字段无效; \r\n1: 地市池不足, 分配全国号码池; \r\n2: 地市池不足, 不分配全国号码池',
+            `area_code`                 varchar(8)   NOT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `city_code`                 varchar(8)   NOT NULL COMMENT '地市编码 通area_code, wholearea=1时 为0000',
+            `whole_area`                tinyint(2)   NOT NULL COMMENT '标识当前绑定请求是否使用全国号池\r\n传1：使用全国号池\r\n不传该字段或传0：不启用全国号池',
+            `callback_flag`             tinyint(1)   DEFAULT NULL COMMENT 'tel是否可以回呼X找到最近联系人(默认0), 回呼有效时间为callback_expiration: 1: 是 0: 否',
+            `callback_expiration`       bigint(15)   DEFAULT NULL COMMENT '回呼AX绑定有效持续时间(秒), 必须小于expiration, 为空默认与expiration相同',
+            `callback_expire_time`      datetime     DEFAULT NULL COMMENT '回呼AX过期时间',
+            `expiration`                bigint(15)   NOT NULL COMMENT '分机号E和X号码绑定有效持续时间，即过expiration秒后XE关系失效自动解绑',
+            `enable_record`             tinyint(2)   NOT NULL COMMENT '当前绑定关系是否需要录音 0：不需要 1：需要（数值字符串）',
+            `user_data`                 varchar(512) DEFAULT NULL COMMENT '业务侧信息透传字段。所有当前bind_id产生的通话在话单回推时需要将该字段带回',
+            `max_duration`              int(1)       NOT NULL COMMENT '最大通话时长',
+            `type`                      tinyint(2)   NOT NULL COMMENT '0：正常(可不传，系统默认0) 1：禁用短信',
+            `record_file_format`        varchar(8)   NOT NULL COMMENT '指示呼叫转接的录音格式，仅下列值有效。默认是 wav。\n mp3\n wav',
+            `model`                     tinyint(2)   NOT NULL COMMENT '在被叫上显示来话的真实号码。\n2：显示X号码(默认值)\n3：显示真实号码',
+            `record_mode`               tinyint(2)   NOT NULL COMMENT '录音方式。 0：混音，即通话双方的声音混合在一个声道中。
+                1：双声道，即通话双方的声音分别录制在左、右两个声道中。如果不携带该参数，参数值默认为0。',
+            `dual_record_mode`          tinyint(2)   NOT NULL COMMENT
+                '双声道录音模式，取值范围如下：0：主叫录音到左声道，被叫录音到右声道。1：被叫录音到左声道，主叫录音到右声道。录音模式为双声道时有效，而且是必选默认主叫录音到左声道，被叫录音到右声道',
+            `audio`                     varchar(128) DEFAULT NULL COMMENT '其它号码拨打X放音文件编码(AX模型B打给A，接通后B播放的语音)',
+            `audio_called`              varchar(128) DEFAULT NULL COMMENT 'AX模型B打给A，接通后A播放的语音',
+            `ayb_flag`                  tinyint(2)   NOT NULL COMMENT '是否生成AYB绑定关系, 1: 是 (默认值); 0: 否',
+            `ayb_expiration`            bigint(15)   DEFAULT NULL COMMENT 'AYB有效持续时间单位秒 ',
+            `ayb_area_code`             varchar(8)   DEFAULT NULL COMMENT '获取Y号码地区；默认=area_code',
+            `ayb_other_show`            tinyint(2)   DEFAULT NULL COMMENT 'tel回呼Y时被叫看到的来电号码 1：看见Y 2：看见tel_x',
+            `ayb_audio_a_call_x`        varchar(128) DEFAULT NULL COMMENT '拨打tel的手机号作为主叫的放音字段（接通后）',
+            `ayb_audio_a_called_x`      varchar(128) DEFAULT NULL COMMENT '拨打tel的手机号作为被叫的放音字段，tel回拨场景（接通后）',
+            `ayb_audio_b_call_x`        varchar(128) DEFAULT NULL COMMENT 'tel为主叫时的放音字段，tel回拨场景（接通后）',
+            `ayb_audio_b_called_x`      varchar(128) DEFAULT NULL COMMENT 'tel作为被叫时的放音字段（接通后）',
+            `ayb_audio_a_call_x_before` varchar(128) DEFAULT NULL COMMENT '不区分模型，A打给B，接通前主叫A听到的提示音',
+            `ayb_audio_b_call_x_before` varchar(128) DEFAULT NULL COMMENT '不区分模型，B打给A，接通前主叫B听到的提示音',
+            `last_min_voice`            varchar(128) DEFAULT NULL COMMENT '通话最后一分钟放音',
+            `create_by`                 varchar(32)  DEFAULT NULL COMMENT '创建人',
+            `update_by`                 varchar(32)  DEFAULT NULL COMMENT '更新人',
+            `create_time`               datetime     DEFAULT NULL COMMENT '创建时间',
+            `update_time`               datetime     DEFAULT NULL COMMENT '修改时间',
+            `expire_time`               datetime     NOT NULL COMMENT '过期时间',
+            `appkey`                    varchar(8)   DEFAULT NULL,
+            `ts`                        varchar(16)  DEFAULT NULL,
+            `sign`                      varchar(128) DEFAULT NULL,
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_request_id` (`request_id`) USING BTREE,
+            KEY `idx_expire_time` (`expire_time`) USING BTREE,
+            KEY `idx_area_code` (`area_code`) USING BTREE,
+            KEY `idx_city_code` (`city_code`) USING BTREE,
+            KEY `idx_tel` (`tel`) USING BTREE,
+            KEY `idx_tel_x_ext` (`tel_x`, `tel_x_ext`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='通用AXE 分机号绑定关系${vccId}-${index}';
+    </select>
+
+    <select id="createBindAx">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_ax_${vccId}`
+        (
+            `bind_id`               varchar(128) NOT NULL COMMENT '绑定关系ID ',
+            `request_id`            varchar(128) NOT NULL COMMENT '请求ID',
+            `supplier_id`           varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `vcc_id`                varchar(8)   NOT NULL COMMENT '企业id',
+            `tel_a`                 varchar(32)  NOT NULL COMMENT '号码A, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_b`                 varchar(32)  DEFAULT NULL COMMENT '号码B, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_x`                 varchar(32)  NOT NULL COMMENT '虚拟号码',
+            `area_code`             varchar(8)   NOT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `city_code`             varchar(8)   NOT NULL COMMENT '地市编码 通area_code, whole_area=1时 为0000',
+            `whole_area`            varchar(2)   NOT NULL COMMENT '使用全国池, 1 是, 其他 否',
+            `expiration`            bigint(15)   NOT NULL COMMENT '有效持续时间，过expiration秒后自动解绑。数值字符串',
+            `enable_record`         tinyint(2)   NOT NULL COMMENT '当前绑定关系是否需要录音 0：不需要 1：需要（数值字符串）',
+            `type`                  tinyint(2)   NOT NULL COMMENT '0：正常(可不传，系统默认0) 1：禁用短信',
+            `model`                 tinyint(2)   NOT NULL COMMENT '在被叫上显示来话的真实号码。\n2：显示X号码(默认值)\n3：显示真实号码',
+            `record_file_format`    varchar(8)   NOT NULL COMMENT '指示呼叫转接的录音格式，仅下列值有效。默认是 wav。\n mp3\n wav',
+            `record_mode`           tinyint(2)   NOT NULL COMMENT '录音模式, 默认0\n 0：分声道录音\n1：按主被叫分文件录音',
+            `dual_record_mode`      tinyint(2)   NOT NULL COMMENT
+                '双声道录音模式，取值范围如下：0：主叫录音到左声道，被叫录音到右声道。1：被叫录音到左声道，主叫录音到右声道。录音模式为双声道时有效，而且是必选默认主叫录音到左声道，被叫录音到右声道',
+            `audio_a_call_x`        varchar(128) DEFAULT NULL COMMENT 'A拨打X放音文件编码',
+            `audio_b_call_x`        varchar(128) DEFAULT NULL COMMENT 'B拨打X放音文件编码',
+            `audio_other_call_x`    varchar(128) DEFAULT NULL COMMENT '非A、B的其它号码拨打X放音文件编码',
+            `audio_a_called_x`      varchar(128) DEFAULT NULL COMMENT 'A 为被叫时 给A播放语音文件编码',
+            `audio_b_called_x`      varchar(128) DEFAULT NULL COMMENT 'B 为被叫时 给B播放语音文件编码',
+            `audio_a_call_x_before` varchar(128) DEFAULT NULL COMMENT 'A打给B，接通前A号码拨打X放音文件',
+            `audio_b_call_x_before` varchar(128) DEFAULT NULL COMMENT 'B打给A，接通前B号码拨打X放音文件',
+            `last_min_voice`        varchar(128) DEFAULT NULL COMMENT '通话最后一分钟放音',
+            `user_data`             varchar(512) DEFAULT NULL COMMENT '业务侧信息透传字段。所有当前bind_id产生的通话在话单回推时需要将该字段带回',
+            `max_duration`          int(1)       DEFAULT NULL COMMENT '最大通话时长',
+            `create_time`           datetime     DEFAULT NULL COMMENT '创建时间',
+            `update_time`           datetime     DEFAULT NULL COMMENT '修改时间',
+            `expire_time`           datetime     DEFAULT NULL COMMENT '过期时间',
+            `appkey`                varchar(8)   DEFAULT NULL,
+            `ts`                    varchar(16)  DEFAULT NULL,
+            `sign`                  varchar(128) DEFAULT NULL,
+            `create_by`             varchar(32)  DEFAULT NULL COMMENT '创建人',
+            `update_by`             varchar(32)  DEFAULT NULL COMMENT '更新人',
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_request_id` (`request_id`) USING BTREE,
+            KEY `idx_expire_time` (`expire_time`) USING BTREE,
+            KEY `idx_area_code` (`area_code`) USING BTREE,
+            KEY `idx_tel_x` (`tel_x`) USING BTREE,
+            KEY `idx_tel_a` (`tel_a`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='隐私号AX绑定关系${vccId}';
+    </select>
+
+
+    <select id="createBindAxebn">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_axebn_${vccId}`
+        (
+            `bind_id`            varchar(128) NOT NULL COMMENT '绑定关系ID',
+            `request_id`         varchar(128) NOT NULL COMMENT '企请求Id',
+            `supplier_id`        varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `vcc_id`             varchar(8)   DEFAULT NULL,
+            `tel_a`              varchar(32)  DEFAULT NULL COMMENT 'A号码；18600008888或0108888999',
+            `tel_b`              varchar(256) DEFAULT NULL COMMENT 'B号码；18600008888或0108888999,号码可为最多为5个号码，中间以英文逗号分隔',
+            `tel_x`              varchar(32)  DEFAULT NULL COMMENT '虚号',
+            `tel_x_ext`          varchar(128) DEFAULT NULL COMMENT '分机号,与tel_b相对应，中间以英文逗号分隔',
+            `area_code`          varchar(8)   DEFAULT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `whole_area`         tinyint(2)   DEFAULT NULL COMMENT '使用全国池, 1 是, 其他, 0 否',
+            `city_code`          varchar(8)   DEFAULT NULL COMMENT '地市编码 通area_code, wholearea=1时 为0000',
+            `expiration`         bigint(15)   DEFAULT NULL COMMENT '有效持续时间，即过expiration秒后AX关系失效自动解绑；',
+            `audio`              varchar(128) DEFAULT NULL COMMENT 'B打给A，接通后主叫B听到的提示音',
+            `audio_called`       varchar(128) DEFAULT NULL COMMENT 'B打给A，接通后被叫A端听到的提示音',
+            `enable_record`      tinyint(2)   DEFAULT NULL COMMENT '当前绑定关系是否需要录音 0：不需要 1：需要（数值字符串）',
+            `last_min_voice`     varchar(128) DEFAULT NULL COMMENT '通话最后一分钟放音',
+            `type`               tinyint(2)   DEFAULT NULL COMMENT '0：正常(可不传，系统默认0) 1：禁用短信',
+            `record_file_format` varchar(8)   DEFAULT NULL COMMENT '指示呼叫转接的录音格式，仅下列值有效。默认是 wav。\n mp3\n wav',
+            `model`              tinyint(2)   DEFAULT NULL COMMENT '在被叫上显示来话的真实号码。\n2：显示X号码(默认值)\n3：显示真实号码',
+            `record_mode`        tinyint(2)   DEFAULT NULL COMMENT '录音方式。 0：混音，即通话双方的声音混合在一个声道中。
+            1：双声道，即通话双方的声音分别录制在左、右两个声道中。如果不携带该参数，参数值默认为0。',
+            `dual_record_mode`   tinyint(2)   DEFAULT NULL COMMENT
+                '双声道录音模式，取值范围如下：0：主叫录音到左声道，被叫录音到右声道。1：被叫录音到左声道，主叫录音到右声道。录音模式为双声道时有效，而且是必选默认主叫录音到左声道，被叫录音到右声道',
+            `create_time`        datetime     DEFAULT NULL COMMENT '创建时间',
+            `update_time`        datetime     DEFAULT NULL COMMENT '修改时间',
+            `expire_time`        datetime     DEFAULT NULL COMMENT '过期时间',
+            `max_duration`       int(1)       DEFAULT NULL COMMENT '最大通话时长',
+            `user_data`          varchar(512) DEFAULT NULL COMMENT '业务侧信息透传字段。所有当前bind_id产生的通话在话单回推时需要将该字段带回',
+            `appkey`             varchar(8)   DEFAULT NULL,
+            `ts`                 varchar(16)  DEFAULT NULL,
+            `sign`               varchar(128) DEFAULT NULL,
+            `create_by`          varchar(32)  DEFAULT NULL COMMENT '创建人',
+            `update_by`          varchar(32)  DEFAULT NULL COMMENT '更新人',
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_request_id` (`request_id`) USING BTREE,
+            KEY `idx_expire_time` (`expire_time`) USING BTREE,
+            KEY `idx_area_code` (`area_code`) USING BTREE,
+            KEY `idx_tel_x` (`tel_x`) USING BTREE,
+            KEY `idx_tel_a` (`tel_a`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='AXEBN模式绑定关系${vccId}';
+    </select>
+
+    <select id="createBindAxbn">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_axbn_${vccId}`
+        (
+            `bind_id`            varchar(128) NOT NULL COMMENT '绑定关系ID',
+            `request_id`         varchar(128) NOT NULL COMMENT '企业每个请求Id唯一，如果是同一个请求重复提交，则Id保持相同',
+            `supplier_id`        varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `vcc_id`             varchar(8)   NOT NULL,
+            `source_bind_id`     varchar(128) DEFAULT NULL COMMENT '源绑定id, 追加',
+            `tel_a`              varchar(32)  NOT NULL COMMENT 'A号码；18600008888或0108888999,',
+            `tel_b`              varchar(32)  NOT NULL COMMENT 'B号码；18600008888或0108888999,可以使用11开头的11位假手机号',
+            `tel_x`              varchar(32)  NOT NULL COMMENT '虚号',
+            `tel_b_other`        varchar(128) DEFAULT NULL COMMENT '其他B号码；号码可为最多为5个号码，中间以英文逗号分隔',
+            `tel_y`              varchar(128) DEFAULT NULL COMMENT '虚号个数对应tel_b_other号码的个数，\r\n中间以英文逗号分隔\n例如：\r\n\ntel_b_other =
+            186xxxx0001,186xxxx0002\r\n\ntel_y = 176xxxx0008,176xxxx0009\r\n\ntel_a呼叫号码0008转接到0001\r\n\ntel_a呼叫号码0009转接到
+            0002',
+            `otherB_Y`           varchar(512) DEFAULT NULL COMMENT
+                'tel_other_b与tel_y对应关系；例"otherB_Y":[{"18613883404":"18540257293"},{"18611111111":"18540250502"}]',
+            `display_number`     varchar(32)  NOT NULL COMMENT '被叫来显号码',
+            `area_code`          varchar(8)   NOT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `city_code`          varchar(8)   NOT NULL COMMENT '地市编码 通area_code, wholearea=1时 为0000',
+            `whole_area`         varchar(2)   NOT NULL COMMENT '使用全国池, 1 是, 其他 否',
+            `type`               tinyint(2)   NOT NULL COMMENT '0：正常(可不传，系统默认0) 1：禁用短信',
+            `record_file_format` varchar(8)   NOT NULL COMMENT '指示呼叫转接的录音格式，仅下列值有效。默认是 wav。\n mp3\n wav',
+            `model`              tinyint(2)   NOT NULL COMMENT '在被叫上显示来话的真实号码。\n2：显示X号码(默认值)\n3：显示真实号码',
+            `record_mode`        tinyint(2)   NOT NULL COMMENT '录音方式。 0：混音，即通话双方的声音混合在一个声道中。
+            1：双声道，即通话双方的声音分别录制在左、右两个声道中。如果不携带该参数，参数值默认为0。',
+            `dual_record_mode`   tinyint(2)   NOT NULL COMMENT
+                '双声道录音模式，取值范围如下：0：主叫录音到左声道，被叫录音到右声道。1：被叫录音到左声道，主叫录音到右声道。录音模式为双声道时有效，而且是必选默认主叫录音到左声道，被叫录音到右声道',
+            `expiration`         bigint(15)   NOT NULL COMMENT '有效持续时间s',
+            `audio_a_call_x`     varchar(128) DEFAULT NULL COMMENT 'A拨打Y放音文件 ',
+            `audio_b_call_x`     varchar(128) DEFAULT NULL COMMENT 'B拨打X放音文件编码',
+            `last_min_voice`     varchar(128) DEFAULT NULL COMMENT '通话最后一分钟放音',
+            `mode`               tinyint(2)   NOT NULL COMMENT '1:只需要联系telB（只能使用x虚拟号接通被叫B，使用y1到y5拨打失败，放统一提示音）
+            2:需要能联系到所有telB（可以使用x,y1到y5虚拟号联系B，并成功通话） 以上两种模式中所有B号码呼叫tel_x都能转接到tel_a号码, tel_a呼叫tel_x转接到tel_b号码；',
+            `enable_record`      tinyint(2)   NOT NULL COMMENT '当前绑定关系是否需要录音 0：不需要 1：需要（数值字符串）',
+            `create_time`        datetime     NOT NULL COMMENT '创建时间',
+            `update_time`        datetime     NOT NULL COMMENT '修改时间',
+            `expire_time`        datetime     NOT NULL COMMENT '过期时间',
+            `max_duration`       int(1)       NOT NULL COMMENT '最大通话时长',
+            `user_data`          varchar(512) DEFAULT NULL COMMENT '业务侧信息透传字段。所有当前bind_id产生的通话在话单回推时需要将该字段带回',
+            `appkey`             varchar(8)   DEFAULT NULL,
+            `ts`                 varchar(16)  DEFAULT NULL,
+            `sign`               varchar(128) DEFAULT NULL,
+            `create_by`          varchar(50)  DEFAULT NULL COMMENT '创建人',
+            `update_by`          varchar(50)  DEFAULT NULL COMMENT '更新人',
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_request_id` (`request_id`) USING BTREE,
+            KEY `idx_expire_time` (`expire_time`) USING BTREE,
+            KEY `idx_area_code` (`area_code`) USING BTREE,
+            KEY `idx_tel_x` (`tel_x`) USING BTREE,
+            KEY `idx_source_bind_id` (`source_bind_id`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='AXBN模式绑定关系${vccId}';
+    </select>
+
+    <select id="createBindAxbnRealTel">
+        CREATE TABLE IF NOT EXISTS `private_bind_axbn_real_tel_${vccId}`
+        (
+            `id`          varchar(128) NOT NULL COMMENT '主键 vcc_id:area_code:tel',
+            `area_code`   varchar(8)   NOT NULL COMMENT '地市编码',
+            `tel`         varchar(32)  NOT NULL COMMENT '真实号码 tel',
+            `tel_x`       varchar(32)  NOT NULL COMMENT 'X号码',
+            `bind_id`     varchar(64)  NOT NULL COMMENT '绑定id',
+            `vcc_id`      varchar(32)  NOT NULL COMMENT '企业id',
+            `create_time` datetime     NOT NULL COMMENT '创建时间',
+            PRIMARY KEY (`id`),
+            KEY `idx_tel_x` (`tel`, `tel_x`),
+            KEY `idx_bind_id` (`bind_id`),
+            KEY `idx_area_code_create_time` (`create_time`, `area_code`)
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='隐私号AXBN 真实号码记录${vccId}';
+    </select>
+
+    <select id="createTableOfBindInfoAxbnHis">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_axbn_his_${date}`
+        (
+            `bind_id`        varchar(128) NOT NULL COMMENT '绑定关系ID',
+            `vcc_id`         varchar(8)   NOT NULL COMMENT '企业id',
+            `request_id`     varchar(128) NOT NULL COMMENT '企业每个请求Id唯一，如果是同一个请求重复提交，则Id保持相同',
+            `supplier_id`    varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `source_bind_id` varchar(128) DEFAULT NULL COMMENT 'axe关联绑定id',
+            `tel_a`          varchar(16)  NOT NULL COMMENT 'A号码；18600008888或0108888999,',
+            `tel_b`          varchar(16)  NOT NULL COMMENT 'B号码；18600008888或0108888999,',
+            `tel_b_other`    varchar(256) DEFAULT NULL COMMENT '其他B号码；18600008888或0108888999,',
+            `tel_x`          varchar(16)  NOT NULL COMMENT '虚号X',
+            `tel_y`          varchar(256) DEFAULT NULL COMMENT '虚号Y',
+            `area_code`      varchar(8)   NOT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `expiration`     bigint(15)   NOT NULL COMMENT '有效持续时间，即过expiration秒后AX关系失效自动解绑；',
+            `create_time`    varchar(32)  NOT NULL COMMENT '创建时间',
+            `expire_time`    varchar(32)  NOT NULL COMMENT '过期时间',
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_expire_time` (`expire_time`) USING BTREE,
+            KEY `idx_create_time` (`create_time`) USING BTREE,
+            KEY `idx_area_code` (`area_code`) USING BTREE,
+            KEY `idx_tel_x` (`tel_x`) USING BTREE,
+            KEY `idx_vcc_id` (`vcc_id`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='隐私号axbn历史绑定${date}';
+    </select>
+
+    <select id="createTableOfBindInfoAxbHis">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_axb_his_${date}`
+        (
+            `bind_id`        varchar(64)  NOT NULL COMMENT '绑定关系ID',
+            `request_id`     varchar(128) NOT NULL COMMENT '请求ID,request_id相同的请求，须返回相同的结果。',
+            `supplier_id`    varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `source_bind_id` varchar(128) DEFAULT NULL COMMENT 'axe关联绑定id',
+            `vcc_id`         varchar(32)  DEFAULT NULL COMMENT '企业id',
+            `tel_a`          varchar(32)  DEFAULT NULL COMMENT '号码A, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_b`          varchar(32)  DEFAULT NULL COMMENT '号码B, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_x`          varchar(32)  DEFAULT NULL COMMENT '虚拟号码',
+            `area_code`      varchar(8)   DEFAULT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `create_time`    datetime     DEFAULT NULL COMMENT '创建时间',
+            `expire_time`    datetime     DEFAULT NULL COMMENT '过期时间',
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_tel_x` (`tel_x`) USING BTREE,
+            KEY `idx_area_code_expire` (`expire_time`, `area_code`) USING BTREE,
+            KEY `idx_area_code_create` (`create_time`, `area_code`) USING BTREE,
+            KEY `idx_area_code_tel_b` (`area_code`, `tel_b`) USING BTREE,
+            KEY `idx_area_code_tel_a` (`area_code`, `tel_a`) USING BTREE,
+            KEY `idx_vcc_id` (`vcc_id`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='隐私号axb历史绑定${date}';
+    </select>
+
+    <select id="createTableOfBindInfoAxgHis">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_axg_his_${date}`
+        (
+            `bind_id`        varchar(64)  NOT NULL COMMENT '绑定关系ID',
+            `request_id`     varchar(128) NOT NULL COMMENT '请求ID,request_id相同的请求，须返回相同的结果。',
+            `supplier_id`    varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `source_bind_id` varchar(128) DEFAULT NULL COMMENT 'axe关联绑定id',
+            `vcc_id`         varchar(32)  DEFAULT NULL COMMENT '企业id',
+            `tel_a`          varchar(32)  DEFAULT NULL COMMENT '号码A, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_b`          varchar(32)  DEFAULT NULL COMMENT '号码B, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_x`          varchar(32)  DEFAULT NULL COMMENT '虚拟号码',
+            `area_code`      varchar(8)   DEFAULT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `create_time`    datetime     DEFAULT NULL COMMENT '创建时间',
+            `expire_time`    datetime     DEFAULT NULL COMMENT '过期时间',
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_tel_x` (`tel_x`) USING BTREE,
+            KEY `idx_area_code_expire` (`expire_time`, `area_code`) USING BTREE,
+            KEY `idx_area_code_create` (`create_time`, `area_code`) USING BTREE,
+            KEY `idx_area_code_tel_a` (`area_code`, `tel_a`) USING BTREE,
+            KEY `idx_vcc_id` (`vcc_id`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='隐私号axg历史绑定${date}';
+    </select>
+
+    <select id="createTableOfBindInfoAxybHis">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_axyb_his_${date}`
+        (
+            `bind_id`        varchar(64)  NOT NULL COMMENT '绑定关系ID',
+            `request_id`     varchar(128) NOT NULL COMMENT '请求ID,request_id相同的请求，须返回相同的结果。',
+            `supplier_id`    varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `source_bind_id` varchar(128) DEFAULT NULL COMMENT 'axe关联绑定id',
+            `vcc_id`         varchar(32)  DEFAULT NULL COMMENT '企业id',
+            `tel_a`          varchar(32)  DEFAULT NULL COMMENT '号码A, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_b`          varchar(32)  DEFAULT NULL COMMENT '号码B, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_x`          varchar(32)  DEFAULT NULL COMMENT '虚拟号码X',
+            `tel_y`          varchar(32)  DEFAULT NULL COMMENT '虚拟号码Y',
+            `area_code`      varchar(8)   DEFAULT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `create_time`    datetime     DEFAULT NULL COMMENT '创建时间',
+            `expire_time`    datetime     DEFAULT NULL COMMENT '过期时间',
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_tel_x` (`tel_x`) USING BTREE,
+            KEY `idx_tel_y` (`tel_y`) USING BTREE,
+            KEY `idx_area_code_expire` (`expire_time`, `area_code`) USING BTREE,
+            KEY `idx_area_code_create` (`create_time`, `area_code`) USING BTREE,
+            KEY `idx_area_code_tel_a` (`area_code`, `tel_a`) USING BTREE,
+            KEY `idx_vcc_id` (`vcc_id`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='隐私号axyb历史绑定${date}';
+    </select>
+
+    <select id="createTableOfBindInfoAxHis">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_ax_his_${date}`
+        (
+            `bind_id`        varchar(64)  NOT NULL COMMENT '绑定关系ID',
+            `request_id`     varchar(128) NOT NULL COMMENT '请求ID,request_id相同的请求，须返回相同的结果。',
+            `supplier_id`    varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `source_bind_id` varchar(128) DEFAULT NULL COMMENT 'axe关联绑定id',
+            `vcc_id`         varchar(32)  DEFAULT NULL COMMENT '企业id',
+            `tel_a`          varchar(32)  DEFAULT NULL COMMENT '号码A, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_b`          varchar(32)  DEFAULT NULL COMMENT '号码B, 可以接受手机号码、固定电话。固话有区号且为全数字。',
+            `tel_x`          varchar(32)  DEFAULT NULL COMMENT '虚拟号码',
+            `area_code`      varchar(8)   DEFAULT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `create_time`    datetime     DEFAULT NULL COMMENT '创建时间',
+            `expire_time`    datetime     DEFAULT NULL COMMENT '过期时间',
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_tel_x` (`tel_x`) USING BTREE,
+            KEY `idx_area_code_expire` (`expire_time`, `area_code`) USING BTREE,
+            KEY `idx_area_code_create` (`create_time`, `area_code`) USING BTREE,
+            KEY `idx_area_code_tel_a` (`area_code`, `tel_a`) USING BTREE,
+            KEY `idx_vcc_id` (`vcc_id`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='隐私号ax历史绑定${date}';
+    </select>
+
+
+    <select id="createTableOfBindInfoAxeHis">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_axe_his_${date}`
+        (
+            `bind_id`        varchar(64) NOT NULL COMMENT '绑定关系ID',
+            `request_id`     varchar(64) NOT NULL COMMENT '请求Id',
+            `supplier_id`    varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `source_bind_id` varchar(128) DEFAULT NULL COMMENT 'axe关联绑定id',
+            `vcc_id`         varchar(32)  DEFAULT NULL COMMENT '企业id',
+            `tel`            varchar(32)  DEFAULT NULL COMMENT 'X绑定的真实被叫号码',
+            `tel_x`          varchar(32)  DEFAULT NULL COMMENT '虚号',
+            `tel_x_ext`      varchar(32)  DEFAULT NULL COMMENT '分机号',
+            `area_code`      varchar(8)   DEFAULT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `create_time`    datetime     DEFAULT NULL COMMENT '创建时间',
+            `expire_time`    datetime     DEFAULT NULL COMMENT '过期时间',
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_bind_id` (`bind_id`) USING BTREE,
+            KEY `idx_expire_time` (`expire_time`) USING BTREE,
+            KEY `idx_area_code` (`area_code`) USING BTREE,
+            KEY `idx_tel_x` (`tel_x`) USING BTREE,
+            KEY `idx_vcc_id` (`vcc_id`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='AXE模式绑定关系历史${date}';
+    </select>
+
+    <select id="createTableOfBindInfoAxebnbHis">
+        CREATE TABLE IF NOT EXISTS `private_bind_info_axebn_his_${date}`
+        (
+            `bind_id`        varchar(64) NOT NULL COMMENT '绑定关系ID',
+            `request_id`     varchar(64) NOT NULL COMMENT '请求Id',
+            `supplier_id`    varchar(128) DEFAULT NULL COMMENT '供应商id',
+            `source_bind_id` varchar(128) DEFAULT NULL COMMENT 'axe关联绑定id',
+            `vcc_id`         varchar(32)  DEFAULT NULL COMMENT '企业id',
+            `tel_a`          varchar(32)  DEFAULT NULL COMMENT 'A号码',
+            `tel_b`          varchar(128) DEFAULT NULL COMMENT 'B号码',
+            `tel_x`          varchar(32)  DEFAULT NULL COMMENT '虚号',
+            `tel_x_ext`      varchar(128) DEFAULT NULL COMMENT '分机号',
+            `area_code`      varchar(8)   DEFAULT NULL COMMENT '以0开头的虚拟号区号（如010）',
+            `create_time`    datetime     DEFAULT NULL COMMENT '创建时间',
+            `expire_time`    datetime     DEFAULT NULL COMMENT '过期时间',
+            PRIMARY KEY (`bind_id`) USING BTREE,
+            KEY `idx_bind_id` (`bind_id`) USING BTREE,
+            KEY `idx_expire_time` (`expire_time`) USING BTREE,
+            KEY `idx_area_code` (`area_code`) USING BTREE,
+            KEY `idx_tel_a` (`tel_a`) USING BTREE,
+            KEY `idx_vcc_id` (`vcc_id`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='AXEBN模式绑定关系历史${date}';
+    </select>
+
+    <select id="createTableOfCallEventStats">
+        CREATE TABLE IF NOT EXISTS private_call_event_stats_${date}
+        (
+            `id`            varchar(64) NOT NULL COMMENT 'id',
+            `supplier_id`   varchar(32)     DEFAULT NULL COMMENT '供应商id',
+            `cdr_count`     int(255)       DEFAULT NULL COMMENT '话单量',
+            `ringing`       int(255)       DEFAULT NULL COMMENT '振铃量',
+            `pick_up_count` int(255)       DEFAULT NULL COMMENT '接通量',
+            `vcc_id`        varchar(8)     DEFAULT NULL COMMENT '企业vccid',
+            `area_code`     varchar(64)    DEFAULT NULL COMMENT '地市编码',
+            `current_min`   varchar(128)   DEFAULT NULL COMMENT '当前时间（精确到统计的那一分钟）',
+            `plat_form`     varchar(8)     DEFAULT NULL COMMENT '所属平台',
+            `pick_up_rate`  decimal(10, 2) DEFAULT NULL COMMENT '接通率',
+            `ring_rate`     decimal(10, 2) DEFAULT NULL COMMENT '振铃率',
+            PRIMARY KEY (`id`) USING BTREE,
+            KEY `idx_vcc_id` (`vcc_id`) USING BTREE,
+            KEY `idx_current_min` (`current_min`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8mb4 COMMENT ='隐私号 呼叫事件统计表${date}';
+    </select>
+
+    <select id="createTableOfCorpConcurrencyInfo">
+        CREATE TABLE IF NOT EXISTS private_corp_concurrency_info_${month}
+        (
+            `id`               varchar(36) NOT NULL,
+            `vcc_id`           varchar(32) DEFAULT NULL COMMENT '企业VCCID',
+            `server_ip`        varchar(32) DEFAULT NULL COMMENT '服务器ip',
+            `concurrency_num`  varchar(32) DEFAULT NULL COMMENT '企业并发数',
+            `concurrency_time` datetime    DEFAULT NULL COMMENT '企业并发时间',
+            PRIMARY KEY (`id`),
+            KEY `vcc_index` (`vcc_id`, `concurrency_time`) USING BTREE
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8 COMMENT ='企业并发表${month}';
+    </select>
+
+    <select id="createSmsTable" >
+        CREATE TABLE IF NOT EXISTS smp.sms_sdr_${vccId}_${month} (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `streamNumber` varchar(64) DEFAULT NULL COMMENT '流水号',
+            `messageId` varchar(64) DEFAULT NULL COMMENT '业务流水号',
+            `bindId` varchar(128) DEFAULT NULL COMMENT '绑定id',
+            `vccId` varchar(64) DEFAULT NULL COMMENT '企业标识',
+            `callerNumber` varchar(64) DEFAULT NULL COMMENT '发短信号码',
+            `inNumber` varchar(64) DEFAULT NULL COMMENT '入中间号',
+            `outNumber` varchar(64) DEFAULT NULL COMMENT '出中间号',
+            `calledNumber` varchar(64) DEFAULT NULL COMMENT '收短信号码',
+            `inContent` text COMMENT '短信内容',
+            `failCode` varchar(64) DEFAULT NULL COMMENT
+                '失败码【0：成功；9999：失败；1：命中黑名单；2：被叫为106开头；3：短信发送数量达到上限;4:短信中心不存在;5:不支持短信业务',
+            `failReason` varchar(64) DEFAULT NULL COMMENT '失败原因',
+            `requestTime` datetime DEFAULT NULL COMMENT '用户请求时间',
+            `sendTime` datetime DEFAULT NULL COMMENT '实际发送短信时间',
+            `smsNumber` int(100) DEFAULT NULL COMMENT '短信条数',
+            `supplierId` varchar(64) DEFAULT NULL COMMENT '供应商id',
+            `areaCode` varchar(6) DEFAULT NULL COMMENT '小号区号',
+            `remark` text COMMENT '备注',
+            PRIMARY KEY (`id`),
+            KEY `idx_send_time` (`sendTime`),
+            KEY `idx_vcc_id` (`vccId`),
+            KEY `idx_bind_id` (`bindId`),
+            KEY `idx_message_id` (`messageId`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1;
+    </select>
+
+    <select id="createTableOfCorpBindCountStats">
+        CREATE TABLE IF NOT EXISTS `private_corp_bind_count_stats_${month}` (
+                `stats_id` varchar(128) NOT NULL COMMENT '主键 vccId++areaCode+yyyyMMddHH',
+                `vcc_id` varchar(8) DEFAULT NULL COMMENT '企业VCCID',
+                `area_code` varchar(8) DEFAULT NULL COMMENT '地市编码',
+                `bind_count` bigint(1) DEFAULT NULL COMMENT '绑定次数',
+                `stats_time` datetime DEFAULT NULL COMMENT '统计时间(按小时)',
+                `business_type` varchar(8) DEFAULT NULL COMMENT '业务类型',
+                PRIMARY KEY (`stats_id`) USING BTREE,
+                KEY `idx_time_vcc_id_area` (`stats_time`,`vcc_id`,`area_code`) USING BTREE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='企业绑定次数${month}';
+    </select>
+</mapper>

@@ -1,0 +1,189 @@
+pipeline {
+    agent any
+
+    environment {
+        WORKSPACE = "/home/jenkinsworkspace/workspace/cloudcc-parent-v7.0.0"
+    }
+
+    options {
+        // 设置管道运行的超时时间，在此之后，Jenkins将中止管道
+        timeout(time: 20, unit: 'MINUTES')
+        // 表示保留10次构建历史
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+        // 不允许同时执行流水线，被用来防止同时访问共享资源
+        disableConcurrentBuilds()
+    }
+
+    parameters {
+        extendedChoice(
+                defaultValue: 'v7.0.0',
+                description: 'git分支？',
+                multiSelectDelimiter: ',',
+                name: 'GIT_BRANCH',
+                quoteValue: false,
+                saveJSONParameterToFile: false,
+                type: 'PT_CHECKBOX',
+                value: 'v7.0.0',
+                visibleItemCount: 10
+        )
+        string(
+                name: 'DOCKER_BUILD_SERVER',
+                defaultValue: '250.215',
+                description: '构建docker镜像的服务器'
+        )
+        string(
+                name: 'GIT_URL',
+                defaultValue: 'https://gitlab.linkcircle.cn/cloudcc/cloudcc_crm/cloudcc-parent.git',
+                description: 'git地址'
+        )
+        booleanParam(name: 'MAVEN_INSTALL', defaultValue: true, description: 'Maven install?')
+        booleanParam(name: 'DOCKER_BUILD', defaultValue: true, description: 'Docker build images and push harbor?')
+        extendedChoice(
+                defaultValue: '',
+                description: '部署到哪些服务器？',
+                multiSelectDelimiter: ',',
+                name: 'DEPLOY_SERVERS',
+                quoteValue: false,
+                saveJSONParameterToFile: false,
+                type: 'PT_CHECKBOX',
+                value: '250.213,250.214,250.216,250.143,250.144,250.243,250.244',
+                visibleItemCount: 10
+        )
+        extendedChoice(
+                defaultValue: '',
+                description: '部署哪些服务?',
+                multiSelectDelimiter: ',',
+                name: 'DEPLOY_SERVICE',
+                quoteValue: false,
+                saveJSONParameterToFile: false,
+                type: 'PT_CHECKBOX',
+                value: 'cloudcc-call-control,cloudcc-sdk-interface,cloudcc-client-server,cloudcc-queue-control,cloudcc-cdr-inside,cloudcc-cdr-outside,cloudcc-ivr-fsdtb',
+                visibleItemCount: 10
+        )
+
+    }
+
+    stages {
+        stage('checkout') {
+            steps {
+                sh 'echo ${DEPLOY_SERVERS}'
+                sh 'echo ${GIT_BRANCH}'
+                sh 'echo ${GIT_URL}'
+                checkout([
+                        $class           : 'GitSCM',
+                        branches         : [[name: '*/${GIT_BRANCH}']],
+                        userRemoteConfigs: [[
+                                                    url          : '${GIT_URL}',
+                                                    credentialsId: 'gitlab'
+                                            ]]
+                ])
+            }
+        }
+        stage('Build-Maven') {
+            when {
+                expression { params.MAVEN_INSTALL }
+            }
+            steps {
+                script {
+                    // 获取选择的项目服务名称
+                    def project_service_name_select = "${DEPLOY_SERVICE}".split(",")
+                    def prefix = "cloudcc-service/"
+                    def build_project = ""
+                    for (project_service in project_service_name_select) {
+                        build_project = build_project + prefix + project_service + ","
+                    }
+                    def mvnCmd = "mvn clean -DskipTests=true package -am -pl " + build_project
+                    sh 'rm -rf /home/jenkinsworkspace/workspace/cloudcc-parent-v7.0.0/docker/*.jar'
+                    sh mvnCmd
+                }
+            }
+        }
+
+        stage('Build-Docker') {
+            when {
+                expression { params.DOCKER_BUILD }
+            }
+            steps {
+                script {
+                    // 获取选择的项目服务名称
+                    def project_service_name_select = "${DEPLOY_SERVICE}".split(",")
+                    // 要部署的服务器名称列表
+                    def server_select = "${DEPLOY_SERVERS}".split(",")
+                    def build_project = ""
+                    for (service_name in project_service_name_select) {
+                        echo service_name
+                        build_project = build_project + " " + service_name
+                    }
+                    echo build_project
+
+                    // 获取选择的项目服务名称
+                    def DOCKER_BUILD_SERVER = "${DOCKER_BUILD_SERVER}"
+                    def remoteDirectory = "/home/springboot/"
+                    def execCommand = "/home/springboot/build7.sh " + build_project
+                    echo "开始上传jar包, 上传服务器： " + DOCKER_BUILD_SERVER
+                    sshPublisher(publishers: [
+                            sshPublisherDesc(configName: DOCKER_BUILD_SERVER,
+                                    transfers: [
+                                            sshTransfer(cleanRemote: false,
+                                                    excludes: '',
+                                                    execCommand: execCommand,
+                                                    execTimeout: 1200000,
+                                                    flatten: false,
+                                                    makeEmptyDirs: false,
+                                                    noDefaultExcludes: false,
+                                                    patternSeparator: '[, ]+',
+                                                    remoteDirectory: remoteDirectory,
+                                                    remoteDirectorySDF: '',
+                                                    removePrefix: 'docker/',
+                                                    sourceFiles: 'docker/*.jar')
+                                    ],
+                                    usePromotionTimestamp: false,
+                                    useWorkspaceInPromotion: false,
+                                    verbose: true)
+                    ])
+
+                }
+            }
+        }
+
+        stage('Deploy-Docker') {
+            steps {
+                script {
+                    // 获取选择的项目服务名称
+                    def project_service_name_select = "${DEPLOY_SERVICE}".split(",")
+                    // 要部署的服务器名称列表
+                    def server_select = "${DEPLOY_SERVERS}".split(",")
+                    def build_project = ""
+                    for (service_name in project_service_name_select) {
+                        echo service_name
+                        build_project = build_project + " " + service_name
+                    }
+                    echo build_project
+                    def execCommand = "/home/springboot/restart-service.sh " + build_project
+                    for (server in server_select) {
+                        sshPublisher(publishers: [
+                                sshPublisherDesc(configName: server,
+                                        transfers: [
+                                                sshTransfer(cleanRemote: false,
+                                                        excludes: '',
+                                                        execCommand: execCommand,
+                                                        execTimeout: 120000,
+                                                        flatten: false,
+                                                        makeEmptyDirs: false,
+                                                        noDefaultExcludes: false,
+                                                        patternSeparator: '[, ]+',
+                                                        remoteDirectory: '',
+                                                        remoteDirectorySDF: '',
+                                                        removePrefix: '',
+                                                        sourceFiles: '')
+                                        ],
+                                        usePromotionTimestamp: false,
+                                        useWorkspaceInPromotion: false,
+                                        verbose: true)
+                        ])
+                    }
+                }
+            }
+        }
+    }
+}

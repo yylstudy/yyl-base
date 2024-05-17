@@ -1,0 +1,69 @@
+server:
+  port: 8400
+  servlet:
+    context-path: /vccidhmyc
+  undertow:
+    buffer-size: 1024
+    threads:
+      io: 16
+      worker: 64
+    direct-buffers: true
+spring:
+  cloud:
+    refresh:
+      never-refreshable: com.zaxxer.hikari.HikariDataSource,com.linkcircle.ss.LHikariDataSource
+  mvc:
+    servlet:
+      load-on-startup: 100
+  datasource:
+    dynamic:
+      primary: ms
+      strict: true
+      datasource:
+        ms:
+          url: jdbc:mysql://172.16.251.72:3300/private_number_ms?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
+          username: root
+          password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+          type: com.linkcircle.ss.LHikariDataSource
+      hikari:
+        min-idle: 10
+        max-pool-size: 30
+        idle-timeout: 60000
+        max-lifetime: 600000
+        connection-timeout: 10000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+  # redis 配置
+  redis:
+    cluster:
+      nodes:
+        - 172.16.251.74:9100
+        - 172.16.251.75:9100
+        - 172.16.251.76:9100
+      max-redirects: 5
+      location: A
+    cluster2:
+      # 激活异地机房
+      active: true
+      nodes:
+        - 172.16.251.87:9100
+        - 172.16.251.88:9100
+        - 172.16.251.89:9100
+      max-redirects: 5
+      location: B
+    timeout: 10000
+    database: 0
+    password: cqt@1234
+    masterConnectionPoolSize: 100
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        max-wait: -1
+        min-idle: 0
+# mybatis-plus 配置
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl #开启sql日志
+    map-underscore-to-camel-case: true

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cqt.hmbc.mapper.PrivateDialTestNumberConfMapper">
+
+    <resultMap id="DialTestNumberDTO"
+               type="com.cqt.model.hmbc.dto.DialTestNumberDTO">
+        <result property="vccId" column="vcc_id"/>
+        <result property="vccName" column="vcc_name"/>
+        <result property="businessType" column="business_type"/>
+        <result property="poolType" column="pool_type"/>
+        <result property="numType" column="num_type"/>
+        <result property="supplierId" column="supplier_id"/>
+        <result property="supplierName" column="supplier_name"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="areaName" column="area_name"/>
+        <result property="number" column="number"/>
+        <result property="imsi" column="imsi"/>
+        <result property="state" column="state"/>
+        <result property="gtCode" column="gt_code"/>
+        <result property="locationUpdateStatus" column="location_update_status"/>
+        <result property="failCause" column="fail_cause"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        `private_number_info`
+        .
+        `vcc_id`
+        ,
+        `private_number_info`.`business_type`,
+        `private_number_info`.`pool_type`,
+        `private_number_info`.`num_type`,
+        `private_number_info`.`supplier_id`,
+        `private_supplier_info`.`supplier_name`,
+        `private_number_info`.`area_code`,
+        `private_number_info`.`area_name`,
+        `private_number_info`.`number`,
+        `private_number_info`.`location_update_status`,
+        `private_number_info`.`fail_cause`,
+        `private_number_info`.`state`,
+        `private_number_info`.`imsi`,
+        `private_number_info`.`gt_code`,
+        `private_corp_info`.`vcc_name`
+    </sql>
+
+
+    <sql id="findWhere">
+        <trim prefix="WHERE" prefixOverrides="and | or">
+            <if test="query.vccId != null and query.vccId != '' ">
+                <![CDATA[ AND `private_number_info`.`vcc_id` = #{query.vccId} ]]>
+            </if>
+            <if test="query.numType != null and query.numType != '' ">
+                <![CDATA[ AND `private_number_info`.`num_type` = #{query.numType} ]]>
+            </if>
+            <if test="query.businessType != null and query.businessType != '' ">
+                <![CDATA[ AND `private_number_info`.`business_type` = #{query.businessType} ]]>
+            </if>
+            <if test="query.poolType != null and query.poolType != '' ">
+                <![CDATA[ AND `private_number_info`.`pool_type` = #{query.poolType} ]]>
+            </if>
+            <if test="query.supplierId != null ">
+                <![CDATA[ AND `private_number_info`.`supplier_id` = #{query.supplierId} ]]>
+            </if>
+            <if test="query.areaCode != null and query.areaCode != '' ">
+                <![CDATA[ AND `private_number_info`.`area_code` = #{query.areaCode} ]]>
+            </if>
+            <if test="query.number != null and  query.number != '' ">
+                <![CDATA[ AND `private_number_info`.`number` like concat('%', #{query.number},'%') ]]>
+            </if>
+            <if test="query.locationUpdateStatus != null ">
+                <![CDATA[ AND `private_number_info`.`location_update_status` = #{query.locationUpdateStatus} ]]>
+            </if>
+            <if test="query.timingConfId != null and query.timingConfId != '' ">
+                <![CDATA[ AND `private_dial_test_number_conf`.`timing_conf_id` = #{query.timingConfId} ]]>
+            </if>
+        </trim>
+    </sql>
+
+    <!-- 查询出企业已经配置的号码 -->
+    <select id="findList4Config" resultMap="DialTestNumberDTO">
+        SELECT
+        <include refid="columns"/>
+        FROM `private_dial_test_number_conf`
+        INNER JOIN `private_number_info` ON `private_dial_test_number_conf`.`number` = `private_number_info`.`number`
+        LEFT JOIN `private_corp_info` ON `private_corp_info`.`vcc_id` = `private_number_info`.`vcc_id`
+        LEFT JOIN `private_supplier_info` ON `private_supplier_info`.`supplier_id` = `private_number_info`.`supplier_id`
+        <include refid="findWhere"/>
+    </select>
+
+    <!-- 查询出企业所有号码 -->
+    <select id="findList4All" resultMap="DialTestNumberDTO">
+        SELECT
+        <include refid="columns"/>
+        <!-- 如果拨测号码范围是指定号码, 则从号码配置表中查询 -->
+        FROM `private_number_info`
+        LEFT JOIN `private_corp_info` ON `private_corp_info`.`vcc_id` = `private_number_info`.`vcc_id`
+        LEFT JOIN `private_supplier_info` ON `private_supplier_info`.`supplier_id` = `private_number_info`.`supplier_id`
+        WHERE `private_number_info`.`vcc_id` = #{query.vccId}
+        AND `private_number_info`.`num_type` = 1
+    </select>
+</mapper>

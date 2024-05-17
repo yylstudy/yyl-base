@@ -1,0 +1,26 @@
+{
+  "versions": [
+    {
+      "version": "2.4.1",
+      "date": "2023-02-28",
+      "msg": "绑定id带上hash(x号码)"
+    },
+    {
+      "version": "2.2.0",
+      "date": "2023-02-10",
+      "msg": "根据页面配置企业地市供应商权重, 进行号码绑定, 本地供应商服务请求hmyc, 其他请求hmyc-third"
+    },
+    {
+      "version": "2.0.3",
+      "date": "2022-08-25",
+      "msg": "根据地市配置转发请求到供应商服务, gateway新增接口鉴权"
+    },
+    {
+      "version": "1.0.0",
+      "date": "2021-09-09",
+      "msg": "初始化版本."
+    }
+  ],
+  "artifactId": "通用小号gateway服务 private-number-gateway",
+  "inherit": true
+}

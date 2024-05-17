@@ -1,0 +1,10 @@
+version: '2'
+services:
+  private-monitor:
+    image: monitor:v1.0.0
+    #    restart: on-failure
+    build: .
+    ports:
+      - 17622:17622
+    container_name: monitor
+

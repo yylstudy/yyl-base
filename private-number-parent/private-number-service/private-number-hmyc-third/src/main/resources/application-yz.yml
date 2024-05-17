@@ -1,0 +1,217 @@
+server:
+  port: 18613
+  servlet:
+    context-path: /mt-hmyc
+  undertow:
+    buffer-size: 1024
+    threads:
+      io: 8
+      worker: 64
+    direct-buffers: true
+  tomcat:
+    threads:
+      max: 2000
+
+spring:
+  datasource:
+    dynamic:
+      primary: master # 设置默认的数据源或者数据源组,默认值即为master
+      strict: false #设置严格模式,默认false不启动. 启动后在未匹配到指定数据源时候会抛出异常,不启动则使用默认数据源.
+      datasource:
+        master:
+          url: jdbc:mysql://10.100.1.21:3300/ctdapi?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false
+          username: cqt
+          password: cqt!010@linkcircle
+          driver-class-name: com.mysql.cj.jdbc.Driver
+        slave:
+          url: jdbc:mysql://10.100.1.21:3300/ctdapi?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=false
+          username: cqt
+          password: cqt!010@linkcircle
+          driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      pool-name: MyHikariCP
+      minimum-idle: 10
+      idle-timeout: 60000
+      maximum-pool-size: 500
+      max-lifetime: 180000
+      connection-timeout: 60000
+
+  redis:
+    password: Cqt@redis2021
+    masterConnectionPoolSize: 500
+    cluster:
+      nodes:
+        - 10.100.1.121:9100
+        - 10.100.1.122:9100
+        - 10.100.1.123:9100
+        - 10.100.1.124:9100
+        - 10.100.1.125:9100
+        - 10.100.1.126:9100
+        - 10.100.1.127:9100
+        - 10.100.1.128:9100
+        - 10.100.1.129:9100
+        - 10.100.1.130:9100
+        - 10.100.1.131:9100
+        - 10.100.1.132:9100
+        - 10.100.1.133:9100
+        - 10.100.1.134:9100
+        - 10.100.1.135:9100
+        - 10.100.1.136:9100
+        - 10.100.1.137:9100
+        - 10.100.1.138:9100
+        - 10.100.1.139:9100
+        - 10.100.1.140:9100
+        - 10.100.1.141:9100
+        - 10.100.1.142:9100
+        - 10.100.1.143:9100
+        - 10.100.1.144:9100
+        - 10.100.1.145:9100
+        - 10.100.1.146:9100
+        - 10.100.1.147:9100
+        - 10.100.1.148:9100
+        - 10.100.1.149:9100
+        - 10.100.1.150:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: B
+    cluster2:
+      # 激活异地机房
+      active: true
+      nodes:
+        - 10.101.1.121:9100
+        - 10.101.1.122:9100
+        - 10.101.1.123:9100
+        - 10.101.1.124:9100
+        - 10.101.1.125:9100
+        - 10.101.1.126:9100
+        - 10.101.1.127:9100
+        - 10.101.1.128:9100
+        - 10.101.1.129:9100
+        - 10.101.1.130:9100
+        - 10.101.1.131:9100
+        - 10.101.1.132:9100
+        - 10.101.1.133:9100
+        - 10.101.1.134:9100
+        - 10.101.1.135:9100
+        - 10.101.1.136:9100
+        - 10.101.1.137:9100
+        - 10.101.1.138:9100
+        - 10.101.1.139:9100
+        - 10.101.1.140:9100
+        - 10.101.1.141:9100
+        - 10.101.1.142:9100
+        - 10.101.1.143:9100
+        - 10.101.1.144:9100
+        - 10.101.1.145:9100
+        - 10.101.1.146:9100
+        - 10.101.1.147:9100
+        - 10.101.1.148:9100
+        - 10.101.1.149:9100
+        - 10.101.1.150:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: A
+    timeout: 10000
+    database: 0
+    jedis:
+      pool:
+        max-active: 500
+        max-wait: -1
+        max-idle: 50
+        min-idle: 10
+  rabbitmq:
+    publisher-returns: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 30
+        concurrency: 10
+        retry:
+          enabled: true
+          max-attempts: 3
+      type: simple
+    username: admin
+    password: cqt@1234
+    # addresses: 10.100.1.19:5672,10.100.1.20:5672
+    addresses: 10.100.1.18:5672
+    template:
+      #是否接收return消息的配置，true为接受confirm消息，默认为false
+      mandatory: true
+    virtual-host: meituan
+    publisher-confirm-type: correlated
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+hide:
+  setnxTimeout: 5
+  deadQueueIndexList: 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30
+  # 线程池 最大阻塞队列大小
+  maxQueueSize: 20000
+  # rabbitmq最大通道数
+  channelMax: 65535
+  # 项目启动是否初始化分机号
+  initExtFlag: false
+  maxRequestTimeout: 1000
+  # requestId重复 等待时间 10毫秒
+  requestTimeout: 50
+  # 回收延时增加10秒
+  delayTimeout: 10
+  # 定时监控redis状态cron(可动态修改) 一分钟
+  # multiRedisMonitorCron: '0/1 * * * * ?'
+  multiRedisMonitorCron: '0 0/1 * * * ?'
+  # multiRedisMonitorCron: 0 0 2 1 * ?
+  # 回收异常定时任务cron 1h  0 30 0/1 * * ?
+  recycleExceptionCron: '0 30 5 * * ?'
+  # 当前所属机房
+  currentLocation: B
+  vccId: 3545
+  # 拨测放音文件名
+  dialTestVoice: axb_playBackName.wav
+  # 拨测脚本命令
+  dialTestLuaCmd: fs_cli -x "bgapi lua tencent_meituan_axb_hmbc_1.0.0.lua %s"
+  # 地市转发机房 配置文件
+  areaLocationDataId: meituan-area-location.json
+  saveDb: true
+  # Axb 异常音
+  defaultAxbAudio: exception.wav
+  audioCodeDataId: meituan-audio-code.json
+  # 默认放音文件名 axe  请输入分机号
+  defaultAxeAudio: digitsIvr.wav
+  # 核心线程数
+  corePoolSize: 8
+  # 最大通话时长 s
+  maxDuration: 7200
+  # redis 绑定关系key默认超时时间 s 4小时 14400
+  defaultExpiration: 14400
+  serverIps:
+    - 10.101.1.31:18613
+    - 10.101.1.32:18613
+    - 10.101.1.33:18613
+    - 10.101.1.34:18613
+    - 10.101.1.35:18613
+    - 10.101.1.36:18613
+    - 10.101.1.37:18613
+    - 10.101.1.38:18613
+    - 10.100.1.31:18613
+    - 10.100.1.32:18613
+    - 10.100.1.33:18613
+    - 10.100.1.34:18613
+    - 10.100.1.35:18613
+    - 10.100.1.36:18613
+    - 10.100.1.37:18613
+    - 10.100.1.38:18613
+  syncUrl: http://%s/mt-hmyc/numbers/sync
+
+feign:
+  httpclient:
+    connection-timer-repeat: 20000
+    connection-timeout: 20000
+    max-connections: 1000
+    max-connections-per-route: 100
+
+logging:
+  level:
+    com: info

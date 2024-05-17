@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.cqt</groupId>
+    <artifactId>cloudcc-parent</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>cloudcc-api</module>
+        <module>cloudcc-common</module>
+        <module>cloudcc-service</module>
+        <module>cloudcc-starter</module>
+    </modules>
+
+    <properties>
+        <revision>7.0.0</revision>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
+        <dubbo.version>3.2.7</dubbo.version>
+        <spring-boot-dependencies.version>2.7.16</spring-boot-dependencies.version>
+        <spring-cloud-dependencies.version>2021.0.5</spring-cloud-dependencies.version>
+        <spring-cloud-alibaba-dependencies.version>2021.0.5.0</spring-cloud-alibaba-dependencies.version>
+        <nacos.client.version>2.2.4</nacos.client.version>
+
+        <lk-ss.version>1.5</lk-ss.version>
+        <log4j2.version>2.21.1</log4j2.version>
+        <hutool-version>5.8.23</hutool-version>
+        <redisson.version>3.24.3</redisson.version>
+        <knife4j.version>4.3.0</knife4j.version>
+        <mybatis.plus.version>3.5.4</mybatis.plus.version>
+        <shardingsphere.version>5.2.0</shardingsphere.version>
+        <jedis.version>4.3.0</jedis.version>
+        <caffeine.version>3.1.8</caffeine.version>
+        <transmittable.thread.local.version>2.14.2</transmittable.thread.local.version>
+        <rocketmq.starter.version>2.2.2</rocketmq.starter.version>
+        <rocketmq.client.version>4.9.7</rocketmq.client.version>
+        <kryo.version>5.5.0</kryo.version>
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <fastjson.version>1.2.83</fastjson.version>
+        <spring.statemachine.version>3.2.0</spring.statemachine.version>
+        <spring.statemachine.redis.version>1.2.9.RELEASE</spring.statemachine.redis.version>
+        <guava.version>32.1.3-jre</guava.version>
+        <dubbo.cluster.specify.address.version>1.0.2</dubbo.cluster.specify.address.version>
+        <xxl.job.version>2.4.0</xxl.job.version>
+        <micrometer.version>1.10.5</micrometer.version>
+        <swagger-annotations.version>1.6.11</swagger-annotations.version>
+        <snakeyaml.version>2.2</snakeyaml.version>
+        <commons-fileupload.version>1.5</commons-fileupload.version>
+        <bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
+        <undertow-core.version>2.3.10.Final</undertow-core.version>
+        <apm-toolkit-log4j.version>8.16.0</apm-toolkit-log4j.version>
+    </properties>
+
+    <!--默认依赖-->
+    <dependencies>
+
+    </dependencies>
+
+    <!--版本号管理-->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>${log4j2.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-bom</artifactId>
+                <version>${micrometer.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud-dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba-dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- 统一jar版本管理，避免使用 spring-boot-parent -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot-dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- 统一dubbo jar版本管理，这个很重要，防止jar不同版本冲突 -->
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-bom</artifactId>
+                <version>${dubbo.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!--dubbo 和  springboot 整合的包-->
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-spring-boot-starter</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+
+            <!-- Dubbo Nacos registry dependency -->
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-registry-nacos</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.dubbo.extensions</groupId>
+                <artifactId>dubbo-cluster-specify-address-dubbo3</artifactId>
+                <version>${dubbo.cluster.specify.address.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.nacos</groupId>
+                <artifactId>nacos-client</artifactId>
+                <version>${nacos.client.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-dependencies</artifactId>
+                <version>${knife4j.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger-annotations.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.esotericsoftware</groupId>
+                <artifactId>kryo</artifactId>
+                <version>${kryo.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons-fileupload.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis.plus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-annotation</artifactId>
+                <version>${mybatis.plus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+                <version>${shardingsphere.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-core</artifactId>
+                <version>${hutool-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq.starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-client</artifactId>
+                <version>${rocketmq.client.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-acl</artifactId>
+                <version>${rocketmq.client.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${transmittable.thread.local.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-jdk8</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${xxl.job.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.statemachine</groupId>
+                <artifactId>spring-statemachine-starter</artifactId>
+                <version>${spring.statemachine.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.statemachine</groupId>
+                <artifactId>spring-statemachine-redis</artifactId>
+                <version>${spring.statemachine.redis.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.linkcircle</groupId>
+                <artifactId>lk-ss</artifactId>
+                <version>${lk-ss.version}</version>
+            </dependency>
+
+            <!--<dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk15on</artifactId>
+                <version>${bcprov-jdk15on.version}</version>
+            </dependency>-->
+
+            <!--<dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-core</artifactId>
+                <version>${undertow-core.version}</version>
+                <scope>compile</scope>
+            </dependency>-->
+
+            <dependency>
+                <groupId>org.apache.skywalking</groupId>
+                <artifactId>apm-toolkit-log4j-2.x</artifactId>
+                <version>${apm-toolkit-log4j.version}</version>
+            </dependency>
+
+            <!--工程包-->
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>cloudcc-rpc-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>cloudcc-feign-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>cloudcc-mapper</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>cloudcc-model</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>cloudcc-manager</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>cloudcc-base</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>spring-boot-starter-docs</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>spring-boot-starter-rabbitmq</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>spring-boot-starter-redis</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>spring-boot-starter-xxljob</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>spring-boot-starter-sharding-jdbc</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cqt</groupId>
+                <artifactId>spring-boot-starter-dynamic-mybatis-plus</artifactId>
+                <version>${revision}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!--构建工具-->
+    <build>
+        <!-- pluginManagement：仅仅是一种声明，当前工程或其子工程中可以对 pluginManagement 下的 plugin 进行信息的选择、继承、覆盖等 -->
+        <pluginManagement>
+            <plugins>
+                <!-- maven打包插件：将整个工程打成一个 fatjar （注：默认集成`maven-surefire-plugin`插件） -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot-dependencies.version}</version>
+                    <configuration>
+                        <finalName>${project.build.finalName}</finalName>
+                        <!-- 作用:项目打成jar，同时把本地jar包也引入进去 -->
+                        <includeSystemScope>true</includeSystemScope>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <!-- 可以把依赖的包都打包到生成的Jar包中 -->
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- 编译插件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.10.1</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <!-- 过期的方法的警告
+                          <compilerArgs>
+                              <arg>-Xlint:deprecation</arg>
+                          </compilerArgs> -->
+                        <compilerArguments>
+                            <!-- 是否输出所有的编译信息（包括类的加载等）-->
+                            <!--<verbose />-->
+                            <!-- 解决maven命令编译报错，因为rt.jar 和jce.jar在jre的lib下面，不在jdk的lib下面，
+                            导致maven找不到（java7以后会出现这个问题），将这2个jar包拷贝到jdk的lib下面估计也好使-->
+                            <!--            <bootclasspath>${java.home}\lib\rt.jar;${java.home}\lib\jce.jar</bootclasspath>-->
+                        </compilerArguments>
+                        <compilerArgs>
+                            <arg>-parameters</arg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
+
+                <!-- 复制，删除，打包，重命名文件等... -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.8</version>
+                    <executions>
+                        <execution>
+                            <!-- maven生命周期阶段 -->
+                            <phase>package</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <!-- 任务 -->
+                                <tasks>
+                                    <!-- 复制jar包到指定目录 -->
+                                    <!--suppress UnresolvedMavenProperty -->
+                                    <copy overwrite="true"
+                                          tofile="../../docker/${project.artifactId}.jar"
+                                          file="${project.build.directory}/${project.artifactId}-${revision}.jar"/>
+                                    <!--<copy todir="${project.build.directory}/docker">
+                                        &lt;!&ndash; project.build.directory表示各个模块的target目录 &ndash;&gt;
+                                        <fileset dir="${project.build.directory}">
+                                            &lt;!&ndash; 需要复制的jar包文件名称 &ndash;&gt;
+                                            <include name="${project.artifactId}-${project.version}.jar"/>
+                                        </fileset>
+                                    </copy>-->
+                                </tasks>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+        </plugins>
+
+        <resources>
+            <!--需要配置 不然profiles 无法找到需要替换哪些配置文件-->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.yml</include>
+                    <include>**/*.json</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+    <!-- 环境 -->
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <!--默认激活配置-->
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!--当前环境-->
+                <profile.name>dev</profile.name>
+                <!--配置文件前缀-->
+                <!--<prefix.name></prefix.name>-->
+                <!--Nacos地址-->
+                <server-addr>172.16.251.225:8848</server-addr>
+                <!--异地Nacos地址-->
+                <back-server-addr>172.16.251.225:8848</back-server-addr>
+                <!--命名空间称-->
+                <namespace>cloudcc</namespace>
+                <!--分组名称-->
+                <group>cloudcc</group>
+                <username>nacos</username>
+                <password>Sf@nacos2022</password>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>dev-back</id>
+            <properties>
+                <!--当前环境-->
+                <profile.name>dev-back</profile.name>
+                <!--配置文件前缀-->
+                <!--<prefix.name></prefix.name>-->
+                <!--Nacos地址-->
+                <server-addr>172.16.251.225:8848</server-addr>
+                <!--异地Nacos地址-->
+                <back-server-addr>172.16.250.216:8848</back-server-addr>
+                <!--命名空间称-->
+                <namespace>cloudcc</namespace>
+                <!--分组名称-->
+                <group>cloudcc</group>
+                <username>nacos</username>
+                <password>Sf@nacos2022</password>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>dev-cloudcc7</id>
+            <properties>
+                <!--当前环境-->
+                <profile.name>dev-cloudcc7</profile.name>
+                <!--配置文件前缀-->
+                <!--<prefix.name></prefix.name>-->
+                <!--Nacos地址-->
+                <server-addr>172.16.250.142:8846</server-addr>
+                <!--异地Nacos地址-->
+                <back-server-addr>172.16.250.242:8846</back-server-addr>
+                <!--命名空间称-->
+                <namespace>cloudcc7</namespace>
+                <!--分组名称-->
+                <group>cloudcc</group>
+                <username>nacos</username>
+                <password>Sf@nacos2022</password>
+            </properties>
+        </profile>
+
+    </profiles>
+
+</project>

@@ -1,0 +1,10 @@
+{
+	"versions": [
+	    {
+            "version": "2.0.3",
+            "date": "2022-08-08",
+            "msg": "添加第三方供应商信息"
+    	},
+	],
+	"artifactId": "美团iccpsmspush服务 private-num-iccpsmspush"
+}

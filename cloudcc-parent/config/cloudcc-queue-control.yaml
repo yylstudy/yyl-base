@@ -1,0 +1,18 @@
+server:
+  port: 5003
+  servlet:
+    context-path: /cloudcc-queue-control
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+logger:
+  root:
+    com.cqt.queue.job: debug
+
+cloudcc:
+  # 排队轮训间隔ms
+  queuePollingScheduleTime: 2s

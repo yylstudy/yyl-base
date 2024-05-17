@@ -1,0 +1,202 @@
+server:
+  port: 23001
+  servlet:
+    context-path: /hmbc
+  undertow:
+    buffer-size: 1024
+    threads:
+      io: 8
+      worker: 64
+    direct-buffers: true
+spring:
+  application:
+    name: private-number-hmbc
+  mvc:
+    servlet:
+      load-on-startup: 100
+  datasource:
+    dynamic:
+      primary: master
+      strict: false
+      datasource:
+        master:
+          url: jdbc:mysql://172.16.251.72:3300/private_number_ms?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
+          username: root
+          password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+          type: com.linkcircle.ss.LHikariDataSource
+        nj-cdr:
+          url: jdbc:mysql://172.16.251.73:3300/smp?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
+          username: root
+          password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+          type: com.linkcircle.ss.LHikariDataSource
+        yz-cdr:
+          url: jdbc:mysql://172.16.251.73:3300/smp?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
+          username: root
+          password: RHhiT97UsukJpKyuqpPG1JhrfVH0q/qeRL5uOjC0V3E54yPn+WmVxu90p7/6lzrU6rTuOpDeRdcZ8aYqEcqvYA==
+          type: com.linkcircle.ss.LHikariDataSource
+      hikari:
+        min-idle: 10
+        max-pool-size: 30
+        idle-timeout: 60000
+        max-lifetime: 600000
+        connection-timeout: 120000
+        connection-test-query: SELECT 1 FROM DUAL
+        validation-timeout: 10000
+  # redis 配置
+  redis:
+    cluster:
+      nodes:
+        - 172.16.251.74:9100
+        - 172.16.251.75:9100
+        - 172.16.251.76:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: A
+    cluster2:
+      # 激活异地机房
+      active: true
+      nodes:
+        - 172.16.251.87:9100
+        - 172.16.251.88:9100
+        - 172.16.251.89:9100
+      max-redirects: 5  # 获取失败 最大重定向次数
+      location: B
+    timeout: 10000
+    database: 0
+    password: cqt@1234
+    masterConnectionPoolSize: 300
+    jedis:
+      pool:
+        max-active: 200
+        max-idle: 8
+        max-wait: -1
+        min-idle: 0
+  # rabbitmq 配置
+  rabbitmq:
+    publisher-returns: false
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 30
+        concurrency: 5
+        max-concurrency: 5
+        retry:
+          enabled: true
+          max-attempts: 3
+      type: simple
+    username: admin
+    password: cqt@2020
+    # addresses: 172.16.251.78:5672
+    addresses: 172.16.251.10:5672
+    template:
+      #是否接收return消息的配置，true为接受confirm消息，默认为false
+      mandatory: false
+    virtual-host: fsbc
+    publisher-confirm-type: none
+  # mybatis-plus 配置
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    # log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+xxljob:
+  accessToken:
+  adminAddresses: http://172.16.251.53:38080/xxl-job-admin/
+  #adminAddresses:
+  logRetentionDays: 30
+  logPath: /home/smp/xxl-job/${spring.application.name}
+  address:
+  ip:
+  port: 23010
+  appName: ${spring.application.name}
+  title: 通用小号拨测服务
+  userName: admin
+  password: cqt!010@Xxljob
+
+# 号码拨测配置
+hmbc:
+  # 定时拨测配置
+  dial-test:
+    # 拨测命令服务的请求地址
+    exec-command-url: http://172.16.251.80:8896/COMMAND/command
+    # 请求拨测服务的超时时间
+    timeout: 5000
+    # lua脚本的拨测参数格式
+    lua-param-format: bgapi lua priavte-number-hmbc.lua %s %s %s
+    # 拨测的主叫号码
+    caller-numbers:
+      - '02557914529'
+    # 未上平台的状态码, 默认为 5、用户停机；6、空号；7、停机
+    abnormal-codes:
+      - 5
+      - 6
+      - 7
+    # 号码配置GT所对应的数据源映射配置
+    gt-ds-map:
+      86130003303: yz-cdr
+      86130003302: nj-cdr
+    # 话单查询最大次数 默认3次
+    cdr-query-max-attempts: 3
+    # 话单重查间隔, 单位为毫秒, 默认30000毫秒
+    cdr-query-interval: 30000
+    # 拨测话单的业务标识-920007
+    service-key: 920007
+  # 定时位置更新配置
+  location-updating:
+    # 位置更新失败最大重试次数
+    max-attempts: 3
+    # 位置更新失败的等待间隔时间, 默认 1000 ms
+    interval: 3000
+    # 每次批量请求的号码数量 默认50条
+    per-batch-limit: 50
+  # 企业推送配置
+  push-info:
+    # 需要使用feign请求的接口URL
+    feign-url:
+      - http://private-number-qinghai-ali-push/private-number-qinghai-ali-push/hmbc-result
+    # 失败重推次数, 目前未使用
+    max-attempts: 3
+    # 重推间隔时间, 单位毫秒
+    interval: 300000
+    # 接口超时时间 单位毫秒
+    timeout: 5000
+  # 拨测失败号码的过期时间 单位 天
+  failed-number-expire: 7
+
+feign:
+  # 配置 GZIP 来压缩数据
+  compression:
+    request:
+      enabled: true
+      # 配置压缩的类型
+      mime-types: text/xml,application/xml,application/json
+      # 最小压缩值
+      min-request-size: 8192
+    response:
+      enabled: true
+  client:
+    config:
+      # 默认配置
+      default:
+        # logger-level: full
+        connect-timeout: 30000
+        read-timeout: 30000
+  # httpclient配置信息
+  httpclient:
+    connection-timer-repeat: 30000
+    connection-timeout: 30000
+    max-connections: 1000
+    max-connections-per-route: 200
+    enabled: true
+  sentinel:
+    enabled: true
+# ribbon 配置
+ribbon:
+  eager-load:
+    enabled: true
+    clients: iccp-msrn,private-number-qinghai-ali-push
+
+# logging:
+#   level:
+#     com.cqt.hmbc.mapper: debug
+#     com.cqt.cloud.api: debug

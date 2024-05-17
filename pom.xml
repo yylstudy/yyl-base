@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>base-common</module>
+        <module>cloudcc-parent</module>
         <module>dynamic-datasource-spring-boot-starter</module>
 <!--        <module>lk-ss</module>-->
         <module>leaf</module>
@@ -20,6 +21,7 @@
         <module>mq-spring-boot-starter</module>
         <module>mybatis-plus-boot-starter</module>
 <!--        <module>otter</module>-->
+        <module>private-number-parent</module>
         <module>redis-spring-boot-starter</module>
         <module>sharding-sphere-test-master</module>
         <module>shardingsphere-jdbc-core-spring-boot-starter</module>

@@ -1,0 +1,86 @@
+server:
+  port: 9090
+spring:
+  cloud:
+    gateway:
+      dynamicRoute:
+        enabled: true
+      discovery:
+        locator:
+          enabled: true
+      httpclient:
+        pool:
+          maxIdleTime: 2000
+        connect-timeout: 3000
+        response-timeout: 3000
+
+logging:
+  level:
+    com.cqt: info
+
+ribbon:
+  ServerListRefreshInterval: 3000
+  eager-load:
+    enabled: true
+    clients: private-number-hmyc,private-number-hmyc-third
+
+private-number-hmyc:
+  ribbon:
+    ServerListRefreshInterval: 3000
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule
+private-number-hmyc-third:
+  ribbon:
+    ServerListRefreshInterval: 3000
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule
+
+forward:
+  # 是否记录请求日志
+  enableLog: false
+  # 当前机房 A机房(南京)/ B机房(扬州)
+  curLocation: B
+  # 地市转发机房 配置文件
+  areaLocationDataId: private-area-location.json
+  # 动态路由配置json
+  gatewayRouterDataId: private-gateway-router.json
+  backServiceName: private-number-hmyc
+  backNacos:
+    serverAddr: 172.16.72.210:8848
+    namespace: iccp
+    group: iccp-a
+    username: cqt
+    password: cqt!010@Nacos
+  # 异地http请求超时时间
+  httpTimeout: 5000
+  forwardUriList:
+    - binding
+    - unbind
+    - updateExpiration
+    - setupTelB
+    - fotile
+  thirdHmycUriList:
+    - /private-number/api/v1/fotile/bind/3538
+
+resilience4j:
+  circuitbreaker:
+    timeoutDuration: 5s
+    configs:
+      default:
+        # 滑动窗口的类型为时间窗口
+        sliding-window-type: TIME_BASED
+        # 时间窗口的大小为10秒
+        sliding-window-size: 30
+        # 在CircuitBreaker可以计算错误率之前，配置所需的最小呼叫数（每个滑动窗口时段）
+        minimum-number-of-calls: 5
+        # 在半开状态下允许进行正常调用的次数
+        permitted-number-of-calls-in-half-open-state: 3
+        # 熔断器从打开状态转变为半开状态等待的时间
+        wait-duration-in-open-state: 60000
+        # 在单位时间窗口内调用失败率达到10%后会启动断路器
+        failure-rate-threshold: 10
+        event-consumer-buffer-size: 10
+        register-health-indicator: true
+        # 允许断路器自动由打开状态转换为半开状态
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+
+

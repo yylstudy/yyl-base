@@ -1,0 +1,41 @@
+server:
+  port: 5003
+  servlet:
+    context-path: /cloudcc-queue-control
+dubbo:
+  protocol:
+    name: dubbo
+    port: 25103
+  metrics:
+    protocol: prometheus
+  consumer:
+    loadbalance: shortestresponse
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+
+logger:
+  root:
+    com.cqt.queue.job: debug
+
+cloudcc:
+  # 排队轮训间隔ms
+  queuePollingScheduleTime: 1000ms
+  startQueueTask: true
+
+xxljob:
+  accessToken:
+  adminAddresses: http://172.16.251.223:8800/xxl-job-admin
+  #adminAddresses:
+  logRetentionDays: 30
+  logPath: /home/smp/xxl-job/${spring.application.name}-7
+  address:
+  ip:
+  port: 25003
+  appName: ${spring.application.name}
+  title: 呼叫中心-排队服务-7
+  userName: admin
+  password: cqt!010@Xxljob

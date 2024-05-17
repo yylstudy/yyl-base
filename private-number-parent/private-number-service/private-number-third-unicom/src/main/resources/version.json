@@ -1,0 +1,11 @@
+{
+  "versions": [
+    {
+      "version": "2.2.0",
+      "date": "2022-11-29",
+      "msg": "对接江苏联通接口服务"
+    }
+  ],
+  "artifactId": "【对接江苏联通接口服务 private-number-third-unicom】",
+  "inherit": true
+}
